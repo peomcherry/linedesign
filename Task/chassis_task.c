@@ -34,7 +34,7 @@ extern motor_measure_t motor_can1[];
 speed_wheel c610[8] = {0};
 unsigned char station=1;
 float p=0;
-float i=0;
+
 float d=0;
 int flag=1;
 /**
@@ -86,9 +86,9 @@ void straight_line()
 {
 	
 		  pid_calc(&c610[0].pid_shudu,motor_can1[0].speed_rpm,value1);
-			pid_calc(&c610[1].pid_shudu,motor_can1[1].speed_rpm,value2);
-			pid_calc(&c610[2].pid_shudu,motor_can1[2].speed_rpm,-value3);
-			pid_calc(&c610[3].pid_shudu,motor_can1[3].speed_rpm,-value4);
+			pid_calc(&c610[1].pid_shudu,motor_can1[1].speed_rpm,-value2);
+			pid_calc(&c610[2].pid_shudu,motor_can1[2].speed_rpm,value3);
+			pid_calc(&c610[3].pid_shudu,motor_can1[3].speed_rpm,value4);
     //发送控制电流
 	set_motor(&CHASSIS_CAN,
           //驱动轮

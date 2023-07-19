@@ -18,6 +18,9 @@ PF0 -> LED4 ->I2
 PF1 -> LED3 -> I1
 PF10-> LED2 ->Q1
 PE4 -> led1 -> j2
+PC0-->  ×ó--> N2
+PC1-->  ÖÐ--> O2
+PA5-->  ÓÒ--> P1
 */
 #define left_1()  (HAL_GPIO_ReadPin(GPIOF,GPIO_PIN_0) == 1)
 #define right_1() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_5) == 1)
@@ -31,10 +34,20 @@ PE4 -> led1 -> j2
 #define left_4() (HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_4) == 1)
 #define right_4() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2) == 1)
 
+//#define left_4() (HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_4) == 1)
+//#define right_4() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2) == 1)
+
+#define front_left() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_0) == 1)
+#define front_middle() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_1) == 1)
+#define front_right() (HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5) == 1)
+
+#define left_s() (left_3() == 0 && left_4() == 0)
+
 #define middle_left() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_5))
 #define middle_right() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_5))
 
-
+#define Red 1
+#define Blue 2
 /**
   * @brief          led rgb task
   * @param[in]      pvParameters: NULL

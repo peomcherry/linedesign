@@ -5,7 +5,7 @@
 #include "bsp_as5048.h"
 #include "vofa_lower.h"
 #include "bsp_sbus.h"
-float data=1.8f;
+#include "usart.h"
 extern rc_info_t rc;
 extern int aa;
 extern int aaa;
@@ -34,22 +34,36 @@ typedef struct Time
 	int close_time;
 }osDelay_time;
 osDelay_time delay_time={1000,1000,1000};
+unsigned char len=0;
+uint8_t USART_RX_BUF[USART_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+//接收状态
+//bit15，	接收完成标志
+//bit14，	接收到0x0d
+//bit13~0，	接收到的有效字节数目
+uint16_t USART_RX_STA=0;       //接收状态标记	  
+uint8_t aRxBuffer[RXBUFFERSIZE];//HAL库使用的串口接收缓冲
+
+
+//_K210   K210数据相关定义
+uint8_t USART_RX_BUF_K210[USART_REC_LEN_K210];     //接收缓冲,最大USART_REC_LEN个字节.
+//接收状态
+//bit15，	接收完成标志
+//bit14，	接收到0x0d
+//bit13~0，	接收到的有效字节数目
+uint16_t USART_RX_STA_K210=0;       //接收状态标记	  
+
+uint8_t aRxBuffer_K210[RXBUFFERSIZE_K210];//HAL库使用的串口接收缓冲
 /**
   * @brief 	将取环送环装置设为初始化
   * @param  none
   * @retval none
   */
-void LOCATION_RESET(void)
-{
-	HAL_GPIO_WritePin(GPIOF,GPIO_PIN_14,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOF,GPIO_PIN_14,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOF,GPIO_PIN_14,GPIO_PIN_RESET);
-}
+
 /**
   * @brief          取环 送环 推环
-  * @brief          ch9==1->取环：初始为水平位置，遥控器控制气阀到环的位置，中途应该打开抓取器
-  * @brief          ch9==2->送环：遥控器控制 关闭抓取器，返回初始位置
-	* @brief          ch9==3->推环：遥控器控制 关闭抓取器，返回初始位置
+  * @brief          串口2：树莓派
+  * @brief          串口6：K210
+	* @brief          串口8：定位轮
   * @param[in]      none    
   * @retval         none
   */
@@ -59,22 +73,41 @@ void test_task(void const * argument)
 	  
 	while(1)
 	{
-		
-	//HAL_UART_Receive_IT(&huart7, ReceiveBuff_Huart7, 1);
-	//	printf("\r\n");
-		printf("n16.val=%f\r\n",pos_y);
-		printf("n17.val=%f\r\n",pos_x);
-		printf("n18.val=%f\r\n",zangle);
-		printf("n19.val=%f\r\n",w_z);
-		
-		
-		
-		
-//		if(aaa==1)
-//		{
-//		dumiao();
-//			aaa=0;
+		 AHRSData2PC();
+				int i = 0;
+		//树莓派发送的数据
+//		 if(USART_RX_STA&0x8000)
+//		{					   
+//			len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
+
+//				if(USART_RX_BUF[0] != 'r' && USART_RX_BUF[0] != 'b')
+//			{
+//				for(i=0;i<len;i++)
+//				{
+//					printf("datai=%d\r\n",USART_RX_BUF[i]-48);
+//				}
+//			}
+////			HAL_UART_Transmit(&huart2,(uint8_t*)USART_RX_BUF,len,1000);	//发送接收到的数据
+////			while( HAL_UART_GetState(&huart2) == HAL_UART_STATE_BUSY_TX );
+//			USART_RX_STA=0;
 //		}
+//		
+//		//K210数据接收处理函数  改成自己使用的串口号
+//		if(USART_RX_STA_K210&0x8000)
+//		{					   
+//			len=USART_RX_STA_K210&0x3fff;//得到此次接收到的数据长度
+//		//	printf("\r\n您发送的消息为:\r\n");
+//			HAL_UART_Transmit(&huart6,(uint8_t*)USART_RX_BUF_K210,len,1000);	//发送接收到的数据
+//			while( HAL_UART_GetState(&huart6) == HAL_UART_STATE_BUSY_TX );
+//			USART_RX_STA_K210=0;
+//		}
+
+//		printf("n16.val=%f\r\n",pos_y);
+//		printf("n17.val=%f\r\n",pos_x);
+//		printf("n18.val=%f\r\n",zangle);
+//		printf("n19.val=%f\r\n",w_z);
+//		
+
 		osDelay(10);
 	}
 	

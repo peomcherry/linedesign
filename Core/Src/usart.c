@@ -21,7 +21,10 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "test_task.h"
+#include "string.h"
+#include "stdio.h"
+#include "math.h"
 //全场定位数据  串口6
 #define BUFFERSIZE 255	//可接收的最大数据量
 uint8_t Rx_len_Huart6;//串口6接收长度
@@ -42,6 +45,16 @@ float set_pos_y;
 float set_zangle;
 int move_flag;
 
+
+uint8_t Fd_data[64];
+uint8_t Fd_rsimu[64];
+uint8_t Fd_rsahrs[56];
+int rs_imutype =0;
+int rs_ahrstype =0;
+extern int Time_count;
+
+IMUData_Packet_t IMUData_Packet;
+AHRSData_Packet_t AHRSData_Packet;
 //串口屏 串口2
 //uint8_t Rx_len_Huart2;//串口2接收长度
 //uint8_t ReceiveBuff_Huart2[BUFFERSIZE]; //串口2接收缓冲区
@@ -157,7 +170,7 @@ void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 921600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -448,6 +461,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+    /* USART3 interrupt Init */
+    HAL_NVIC_SetPriority(USART3_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
 
   /* USER CODE END USART3_MspInit 1 */
@@ -611,6 +627,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_9|GPIO_PIN_8);
 
+    /* USART3 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspDeInit 1 */
 
   /* USER CODE END USART3_MspDeInit 1 */
@@ -641,43 +659,262 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+void AHRSData2PC(void)
+{
+	  printf("**********                **********\r\n");	
+	
+// 	 printf("AHRS: The RollSpeed =  %f\r\n",AHRSData_Packet.RollSpeed);
+//	 printf("AHRS: The PitchSpeed =  %f\r\n",AHRSData_Packet.PitchSpeed);
+//   printf("AHRS: The HeadingSpeed =  %f\r\n",AHRSData_Packet.HeadingSpeed);
+//   printf("AHRS: The Roll =  %f\r\n",AHRSData_Packet.Roll);
+//   printf("AHRS: The Pitch =  %f\r\n",AHRSData_Packet.Pitch);
+   printf("AHRS: The Heading =  %f\r\n",(AHRSData_Packet.Heading*57.29578f));
+//   printf("AHRS: The Quaternion.Qw =  %f\r\n",AHRSData_Packet.Qw);
+//   printf("AHRS: The Quaternion.Qx =  %f\r\n",AHRSData_Packet.Qx);
+//   printf("AHRS: The Quaternion.Qy =  %f\r\n",AHRSData_Packet.Qy);
+//   printf("AHRS: The Quaternion.Qz =  %f\r\n",AHRSData_Packet.Qz);
+//   printf("AHRS: The Timestamp =  %d\r\n",AHRSData_Packet.Timestamp);
+//	  printf("**********                **********\r\n");	
+	
+}
+void IMUData2PC(void)
+{
+   //printf("Now start sending IMU data.\r\n");
+	  printf("**********                **********\r\n");	
+
+	 printf("IMU: The gyroscope_x =  %f\r\n",IMUData_Packet.gyroscope_x);
+	 printf("IMU:The gyroscope_y =  %f\r\n",IMUData_Packet.gyroscope_y);
+   printf("IMU:The gyroscope_z =  %f\r\n",IMUData_Packet.gyroscope_z);
+   printf("IMU:The accelerometer_x =  %f\r\n",IMUData_Packet.accelerometer_x);
+   printf("IMU:The accelerometer_y =  %f\r\n",IMUData_Packet.accelerometer_y);
+   printf("IMU:The accelerometer_z =  %f\r\n",IMUData_Packet.accelerometer_z);
+   printf("IMU:The magnetometer_x =  %f\r\n",IMUData_Packet.magnetometer_x);
+   printf("IMU:The magnetometer_y =  %f\r\n",IMUData_Packet.magnetometer_y);
+   printf("IMU:The magnetometer_z =  %f\r\n",IMUData_Packet.magnetometer_z);
+   printf("IMU:The Timestamp =  %d\r\n",IMUData_Packet.Timestamp);
+	 //printf("Now the data of IMU has been sent.\r\n");
+   printf("**********                **********\r\n");	
+
+}
+
+float DATA_Trans(uint8_t Data_1,uint8_t Data_2,uint8_t Data_3,uint8_t Data_4)
+{
+  uint32_t transition_32;
+	float tmp=0;
+	int sign=0;
+	int exponent=0;
+	float mantissa=0;
+  transition_32 = 0;
+  transition_32 |=  Data_4<<24;   
+  transition_32 |=  Data_3<<16; 
+	transition_32 |=  Data_2<<8;
+	transition_32 |=  Data_1;
+  sign = (transition_32 & 0x80000000) ? -1 : 1;//符号位
+	//先右移操作，再按位与计算，出来结果是30到23位对应的e
+	exponent = ((transition_32 >> 23) & 0xff) - 127;
+	//将22~0转化为10进制，得到对应的x系数 
+	mantissa = 1 + ((float)(transition_32 & 0x7fffff) / 0x7fffff);
+	tmp=sign * mantissa * pow(2, exponent);
+	return tmp;
+}
+long long timestamp(uint8_t Data_1,uint8_t Data_2,uint8_t Data_3,uint8_t Data_4)
+{
+  uint32_t transition_32;
+  transition_32 = 0;
+  transition_32 |=  Data_4<<24;   
+  transition_32 |=  Data_3<<16; 
+	transition_32 |=  Data_2<<8;
+	transition_32 |=  Data_1;
+	return transition_32;
+}
+
+uint8_t TTL_Hex2Dec(uint8_t *Fd_data)
+{
+  //  uint8 i;
+     if(rs_ahrstype==1)
+    {
+        if(Fd_data[1]==TYPE_AHRS&&Fd_data[2]==AHRS_LEN)
+        {
+            AHRSData_Packet.RollSpeed=DATA_Trans(Fd_data[7],Fd_data[8],Fd_data[9],Fd_data[10]);       //????????
+            AHRSData_Packet.PitchSpeed=DATA_Trans(Fd_data[11],Fd_data[12],Fd_data[13],Fd_data[14]);   //?????????
+            AHRSData_Packet.HeadingSpeed=DATA_Trans(Fd_data[15],Fd_data[16],Fd_data[17],Fd_data[18]); //????????
+
+            AHRSData_Packet.Roll=DATA_Trans(Fd_data[19],Fd_data[20],Fd_data[21],Fd_data[22]);      //?????
+            AHRSData_Packet.Pitch=DATA_Trans(Fd_data[23],Fd_data[24],Fd_data[25],Fd_data[26]);     //??????
+            AHRSData_Packet.Heading=DATA_Trans(Fd_data[27],Fd_data[28],Fd_data[29],Fd_data[30]);     //?????
+
+            AHRSData_Packet.Qw=DATA_Trans(Fd_data[31],Fd_data[32],Fd_data[33],Fd_data[34]);  //?????
+            AHRSData_Packet.Qx=DATA_Trans(Fd_data[35],Fd_data[36],Fd_data[37],Fd_data[38]);
+            AHRSData_Packet.Qy=DATA_Trans(Fd_data[39],Fd_data[40],Fd_data[41],Fd_data[42]);
+            AHRSData_Packet.Qz=DATA_Trans(Fd_data[43],Fd_data[44],Fd_data[45],Fd_data[46]);
+            AHRSData_Packet.Timestamp=(unsigned long int)timestamp(Fd_data[47],Fd_data[48],Fd_data[49],Fd_data[50]);   //????
+            //AHRSData2PC();
+        }
+        rs_ahrstype=0;
+        //debug("t0\r\n",0);
+       // yaw_imu=RAD_TO_ANGLE(AHRSData_Packet.Heading);//????????
+    }
+    if(rs_imutype==1)
+    {
+        if(Fd_data[1]==TYPE_IMU&&Fd_data[2]==IMU_LEN)
+        {
+            IMUData_Packet.gyroscope_x=DATA_Trans(Fd_data[7],Fd_data[8],Fd_data[9],Fd_data[10]);  //?????
+            IMUData_Packet.gyroscope_y=DATA_Trans(Fd_data[11],Fd_data[12],Fd_data[13],Fd_data[14]);
+            IMUData_Packet.gyroscope_z=DATA_Trans(Fd_data[15],Fd_data[16],Fd_data[17],Fd_data[18]);
+
+            IMUData_Packet.accelerometer_x=DATA_Trans(Fd_data[19],Fd_data[20],Fd_data[21],Fd_data[22]);  //??????
+            IMUData_Packet.accelerometer_y=DATA_Trans(Fd_data[23],Fd_data[24],Fd_data[25],Fd_data[26]);
+            IMUData_Packet.accelerometer_z=DATA_Trans(Fd_data[27],Fd_data[28],Fd_data[29],Fd_data[30]);
+
+            IMUData_Packet.magnetometer_x=DATA_Trans(Fd_data[31],Fd_data[32],Fd_data[33],Fd_data[34]);  //??????????
+            IMUData_Packet.magnetometer_y=DATA_Trans(Fd_data[35],Fd_data[36],Fd_data[37],Fd_data[38]);
+            IMUData_Packet.magnetometer_z=DATA_Trans(Fd_data[39],Fd_data[40],Fd_data[41],Fd_data[42]);
+
+            IMUData_Packet.Timestamp=(unsigned long int)timestamp(Fd_data[55],Fd_data[56],Fd_data[57],Fd_data[58]);   //????
+               //IMUData2PC();
+        }
+        rs_imutype=0;
+        //debug("t1\r\n",0);
+        //debug("imu_z %f\r\n",IMUData_Packet.gyroscope_z);
+       // extern void give_HeadingSpeed(float value);//???????????????
+        //HeadingSpeed=(RAD_TO_ANGLE(IMUData_Packet.gyroscope_z));
+ }
+    //???????
+
+return 0;
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	
-	//printf("ok");
-//	static int cnt=0;
-//	if(huart==&huart6){
-//		extern Shell shell;
-//		extern uint8_t shelldata;	
-//		extern struct kfifo shell_rxfifo;	
-//		uint8_t data=shelldata;//不要删
-//		HAL_UART_Receive_IT(&huart6,(uint8_t*)&shelldata,1);//
-//		cnt++;
-//		kfifo_in(&shell_rxfifo,&data,1);
-//	  //shellHandler(&shell, data);
-
+//	if(huart == &huart8)
+//		{
+//			 static union
+//			{
+//					uint8_t date[24];
+//					float ActVal[6];
+//			} posture;
+//		if(huart == &huart8){
+//			
+//		 for(int i=0; i<24; i++)
+//				{
+//						posture.date[i]=ReceiveBuff_Huart8[i+2]; //ReceiveBuff_Huart7
+//				}
+//				zangle=-posture.ActVal[0];
+//				xangle=posture.ActVal[1];
+//				yangle=posture.ActVal[2];
+//				pos_x=posture.ActVal[3];
+//				pos_y=posture.ActVal[4];
+//				w_z=posture.ActVal[5];
+//		}
 //	}
-//	 uint32_t temp;//计算串口接收到的数据个数
-     static union
-    {
-        uint8_t date[24];
-        float ActVal[6];
-    } posture;
-	if(huart == &huart8){
-		
-	 for(int i=0; i<24; i++)
-      {
-          posture.date[i]=ReceiveBuff_Huart8[i+2]; //ReceiveBuff_Huart7
-      }
-      zangle=-posture.ActVal[0];
-      xangle=posture.ActVal[1];
-      yangle=posture.ActVal[2];
-      pos_x=posture.ActVal[3];
-      pos_y=posture.ActVal[4];
-      w_z=posture.ActVal[5];
+//	if(huart == &huart8)//如果是串口8   陀螺仪（串口8）
+//	{
+//		HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+//		if((USART_RX_STA&0x8000)==0)//接收未完成
+//		{
+//			if(USART_RX_STA&0x4000)//接收到了0x0d
+//			{
+//				if(aRxBuffer[0]!=0x0a)USART_RX_STA=0;//接收错误,重新开始
+//				else USART_RX_STA|=0x8000;	//接收完成了 
+//			}
+//			else //还没收到0X0D
+//			{	
+//				if(aRxBuffer[0]==0x0d)USART_RX_STA|=0x4000;
+//				else
+//				{
+//					USART_RX_BUF[USART_RX_STA&0X3FFF]=aRxBuffer[0] ;
+//					USART_RX_STA++;
+//					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
+//				}		 
+//			}
+//		}
+//	}
+	if(huart == &huart8) //树莓派--串口2
+	{
+		//printf("33");
+		static uint8_t Count=0;
+		static uint8_t last_rsnum=0;
+		static uint8_t rsimu_flag=0;
+		static uint8_t rsacc_flag=0;
+			HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+			//Usart_Receive = USART_ReceiveData(UART5);//Read the data //读取数据
+			Fd_data[Count]=aRxBuffer[0];  //串口数据填入数组
+			//usart1_send(Usart_Receive);
+			if(((last_rsnum==FRAME_END)&&(aRxBuffer[0] == FRAME_HEAD))||Count>0)
+			{
+			Count++; 
+			if((Fd_data[1]==TYPE_IMU)&&(Fd_data[2]==IMU_LEN))
+				rsimu_flag=1;
+			if((Fd_data[1]==TYPE_AHRS)&&(Fd_data[2]==AHRS_LEN))
+				rsacc_flag=1;
+			}
+			else 
+				Count=0;
+			last_rsnum=aRxBuffer[0];
+			
+		if(rsimu_flag==1 && Count==IMU_RS) //将本帧数据保存至Fd_rsimu数组中
+		{
+			Count=0;
+			rsimu_flag=0;
+			rs_imutype=1;
+			if(Fd_data[IMU_RS-1]==FRAME_END) //帧尾校验
+			{
+					TTL_Hex2Dec(Fd_data);
+			}
+		}
+		if(rsacc_flag==1 && Count==AHRS_RS) //
+		{
+			Count=0;
+			rsacc_flag=0;
+			rs_ahrstype=1;
+			if(Fd_data[AHRS_RS-1]==FRAME_END)
+			{
+					TTL_Hex2Dec(Fd_data);
+			}
+		}
 	}
 	
-	
+			if(huart == &huart6){
+			HAL_UART_Receive_IT(&huart6, (uint8_t *)aRxBuffer_K210, RXBUFFERSIZE);
+			if((USART_RX_STA_K210&0x8000)==0)//接收未完成
+			{
+				if(USART_RX_STA_K210&0x4000)//接收到了0x0d
+				{
+					if(aRxBuffer_K210[0]!=0x0a)USART_RX_STA_K210=0;//接收错误,重新开始
+					else USART_RX_STA_K210|=0x8000;	//接收完成了 
+				}
+				else //还没收到0X0D
+				{	
+					if(aRxBuffer_K210[0]==0x0d)USART_RX_STA_K210|=0x4000;
+					else
+					{
+						USART_RX_BUF_K210[USART_RX_STA_K210&0X3FFF]=aRxBuffer_K210[0] ;
+						USART_RX_STA_K210++;
+						if(USART_RX_STA_K210>(USART_REC_LEN_K210-1))USART_RX_STA_K210=0;//接收数据错误,重新开始接收	  
+					}		 
+				}
+			}
+		}
+			
+		
 	
 }
+
+
+
+
+
+
+//int UART2_IRQHandler(void)
+//{
+//	
+//	return 0;
+//}
+/*******************************
+16进制转浮点型数据
+*******************************/
+
+
 /* USER CODE END 1 */

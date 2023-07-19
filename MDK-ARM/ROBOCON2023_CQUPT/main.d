@@ -58,3 +58,5 @@ robocon2023_cqupt\main.o: ../Hardware/bsp_sbus.h
 robocon2023_cqupt\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 robocon2023_cqupt\main.o: ../Hardware/vofa_lower.h
 robocon2023_cqupt\main.o: ../Hardware/commend.h
+robocon2023_cqupt\main.o: ../Task/test_task.h
+robocon2023_cqupt\main.o: ../Control/struct_typedef.h

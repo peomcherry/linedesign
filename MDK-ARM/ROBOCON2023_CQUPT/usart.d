@@ -34,3 +34,8 @@ robocon2023_cqupt\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi
 robocon2023_cqupt\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 robocon2023_cqupt\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 robocon2023_cqupt\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+robocon2023_cqupt\usart.o: ../Task/test_task.h
+robocon2023_cqupt\usart.o: ../Control/struct_typedef.h
+robocon2023_cqupt\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+robocon2023_cqupt\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+robocon2023_cqupt\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

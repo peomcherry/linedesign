@@ -33,15 +33,30 @@
 #include "stdio.h"
 #include "vofa_lower.h"
 #include "commend.h"
+#include "test_task.h"
 //重写printf
-int fputc(int ch,FILE *f)
+//int fputc(int ch,FILE *f)
+//{
+//    uint8_t temp[1]= {ch};
+//    HAL_UART_Transmit(&huart6,temp,1,2);
+//		return 0;
+//}
+
+int fputc(int ch, FILE *f)
 {
-    uint8_t temp[1]= {ch};
-    HAL_UART_Transmit(&huart6,temp,1,2);
-		return 0;
+  HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 0xffff);
+  return ch;
 }
-
-
+//int fputc(int ch, FILE *f)
+//{
+//  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xffff);
+//  return ch;
+//}
+//int fputc(int ch, FILE *f)
+//{
+//  HAL_UART_Transmit(&huart8, (uint8_t *)&ch, 1, 0xffff);
+//  return ch;
+//}
 #define BUFFERSIZE 255	//可接收的最大数据量
 //uint8_t Rx_len_Huart7;//串口6接收长度
 //uint8_t ReceiveBuff_Huart7[BUFFERSIZE]; //串口6接收缓冲区
@@ -141,17 +156,22 @@ int main(void)
   dbus_uart_init();
 	
 	HAL_TIM_Base_Start_IT(&htim2);
-	extern void userShellInit(void);//由于该rtos不支持宏自动初始化,故手动初始化
-  userShellInit();
+	//这里将串口6的shell命令注释
+//	extern void userShellInit(void);//由于该rtos不支持宏自动初始化,故手动初始化
+//  userShellInit();
   my_can_filter_init_recv_all(&hcan1);
   can_filter_recv_special(&hcan2);
 	HAL_UART_Receive_IT(&huart1, &cmd, 1);
 	//HAL_UART_Receive_IT(&huart7, ReceiveBuff_Huart7, 1);
 
     __HAL_UART_ENABLE_IT(&huart7, UART_IT_IDLE);//使能串口7 IDLE中断
-    __HAL_UART_ENABLE_IT(&huart8, UART_IT_IDLE);//使能串口7 IDLE中断
+    //__HAL_UART_ENABLE_IT(&huart8, UART_IT_IDLE);//使能串口7 IDLE中断
    // HAL_UART_Receive_DMA(&huart7,ReceiveBuff_Huart7,BUFFERSIZE);//使能接收
     __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);//使能串口2 IDLE中断
+			HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);//该函数会开启接收中断：标志位UART_IT_RXNE，并且设置接收缓冲以及接收缓冲接收最大数据量
+	  HAL_UART_Receive_IT(&huart6, (uint8_t *)aRxBuffer_K210, RXBUFFERSIZE_K210);
+	 // HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer_K210, RXBUFFERSIZE_K210);
+
     /*第二个参数目前为数组 如果为变量需要加取地址符*/
    // HAL_UART_Receive_DMA(&huart2,ReceiveBuff_Huart2,BUFFERSIZE);//使能接收
 	var_init();
