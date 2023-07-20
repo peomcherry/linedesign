@@ -831,14 +831,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //			}
 //		}
 //	}
-	if(huart == &huart8) //树莓派--串口2
+	if(huart == &huart2) //树莓派--串口2
 	{
-		//printf("33");
 		static uint8_t Count=0;
 		static uint8_t last_rsnum=0;
 		static uint8_t rsimu_flag=0;
 		static uint8_t rsacc_flag=0;
-			HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+			HAL_UART_Receive_IT(&huart2, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
 			//Usart_Receive = USART_ReceiveData(UART5);//Read the data //读取数据
 			Fd_data[Count]=aRxBuffer[0];  //串口数据填入数组
 			//usart1_send(Usart_Receive);

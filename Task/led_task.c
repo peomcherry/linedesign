@@ -32,6 +32,7 @@ extern uint8_t USART_RX_BUF_K210[USART_REC_LEN_K210];
 extern AHRSData_Packet_t AHRSData_Packet;
 double Last_ANGLE_AHR298=0;
 	int i = 0;
+double Angle_AHR;
   /* USER CODE BEGIN 2 */
 
 
@@ -207,63 +208,109 @@ void judge_treasure(void)
 			0(360)
 每次重启后 指向即为0度
 */
-void line_walking(void)
-{//0代表检测到
-
+void ll(void)
+{
+//	if(front_middle() == 1)
+//	{
+//	  	value2 = value4 =2000;
+//	}
 		if(left_1() == 0 || right_1() == 0)																	//直走
 	{
-		value1 = value2 = \
-		value3 = value4 =7000;
+		value2 = \
+		 value4 =3000;
 		station = 1;
 	}
-	else if( (right_2() == 0)) //偏向右边，要往左right_1() == 0 || 						//右2
+	else if( right_2() == 0) //偏向右边，要往左right_1() == 0 || 						//右2
 	{
-		value4 =7700;
+		value4 =4000;
+		value2 = 3000;
 		station = 1;
 	}
 	else if( (left_2() == 0)) //偏向左边，要往右left_1() == 0 ||				//左2
 	{
-		value2 =7700;
+		value2 =4000;
+		value4 = 3000;
+
 		station = 1;
 	}
 	else if( (right_3() == 0)) //偏向左边，要往右															//右3
 	{
-		value4 =8500;
+		value4 =4500;
+		value2 = 3200;
+
 		station = 1;
 	}
 	else if( (left_3() == 0)) //偏向左边，要往右1241										//左3
 	{
-		value2 =8500;
+		value2 =4500;
+		value4 = 3200;
+
 		station = 1;
 	}
 	else if( (right_4() == 0)) //偏向左边，要往右															//右4
 	{
-		value4 =8500;
+		value4 =5000;
+		value2 = 4000;
 		station = 1;
 	}
 	else if( (left_4() == 0)) //偏向左边，要往右												//左4
 	{
-		value2 =8500;
+		value2 =5000;
+		value4 = 4000;
 		station = 1;
 	}
-	else if(front_left()==0)																					//左前
+	else
 	{
-		while(ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=95)									
-		{
-			value2=7000;
-			value4=-7000;
+	value2=0;
+	value4=0;
+	}
+}
+void line_walking(void)
+{//0代表检测到
+	if(front_left()==0)																					//左前
+	{
+			Last_ANGLE_AHR298=ANGLE_AHR298;
+		printf("last=%f\r\n",Last_ANGLE_AHR298);
+		printf("this=%f\r\n",ANGLE_AHR298);
+				if(0<Last_ANGLE_AHR298||Last_ANGLE_AHR298<90){
+			Angle_AHR =(AHRSData_Packet.Heading*57.29578f);
+			Angle_AHR -=360;
 		}
-	Last_ANGLE_AHR298=ANGLE_AHR298;
+		while(__fabs(ANGLE_AHR298-Last_ANGLE_AHR298)<=90)									
+		{
+			value2=3500;
+			value4=-800;	
+			printf("last11=%f\r\n",Last_ANGLE_AHR298);
+		  printf("this11=%f\r\n",ANGLE_AHR298);
+		}
+		value2=3000;
+		value4=3000;	
 	}
 	else if(front_right()==0)																									//右前
 	{
-		while(ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=95)
-		{
-			value2=-7000;
-			value4=7000;
+		
+		Last_ANGLE_AHR298=ANGLE_AHR298;
+		if(270<Last_ANGLE_AHR298||Last_ANGLE_AHR298<360){
+			Angle_AHR =(AHRSData_Packet.Heading*57.29578f);
+			Angle_AHR +=360;
 		}
-	Last_ANGLE_AHR298=ANGLE_AHR298;
+
+		printf("yylast=%f\r\n",Last_ANGLE_AHR298);
+		printf("yythis=%f\r\n",ANGLE_AHR298);
+		while(ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=90)
+		{
+			value2=-800;
+			value4=3500;
+		}
+		value2=3000;
+		value4=3000;
 	}
+	else{
+		ll();
+	}
+
+
+ 
 	
 
 

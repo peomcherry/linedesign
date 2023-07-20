@@ -167,8 +167,8 @@ int main(void)
     __HAL_UART_ENABLE_IT(&huart7, UART_IT_IDLE);//使能串口7 IDLE中断
     //__HAL_UART_ENABLE_IT(&huart8, UART_IT_IDLE);//使能串口7 IDLE中断
    // HAL_UART_Receive_DMA(&huart7,ReceiveBuff_Huart7,BUFFERSIZE);//使能接收
-    __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);//使能串口2 IDLE中断
-			HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);//该函数会开启接收中断：标志位UART_IT_RXNE，并且设置接收缓冲以及接收缓冲接收最大数据量
+   // __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);//使能串口2 IDLE中断
+			HAL_UART_Receive_IT(&huart2, (uint8_t *)aRxBuffer, RXBUFFERSIZE);//该函数会开启接收中断：标志位UART_IT_RXNE，并且设置接收缓冲以及接收缓冲接收最大数据量
 	  HAL_UART_Receive_IT(&huart6, (uint8_t *)aRxBuffer_K210, RXBUFFERSIZE_K210);
 	 // HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer_K210, RXBUFFERSIZE_K210);
 
