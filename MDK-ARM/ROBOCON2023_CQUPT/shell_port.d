@@ -46,6 +46,8 @@ robocon2023_cqupt\shell_port.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ha
 robocon2023_cqupt\shell_port.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 robocon2023_cqupt\shell_port.o: ../Core/Inc/usart.h
 robocon2023_cqupt\shell_port.o: ../Core/Inc/main.h
+robocon2023_cqupt\shell_port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\cmath
+robocon2023_cqupt\shell_port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 robocon2023_cqupt\shell_port.o: ../Middlewares/Third_Party/LetterShell/extensions/log/log.h
 robocon2023_cqupt\shell_port.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 robocon2023_cqupt\shell_port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h

@@ -39,6 +39,8 @@ robocon2023_cqupt\chassis_task.o: ..\Task\chassis_task.h
 robocon2023_cqupt\chassis_task.o: ../Control/pid.h
 robocon2023_cqupt\chassis_task.o: ../Hardware/bsp_sbus.h
 robocon2023_cqupt\chassis_task.o: ../Core/Inc/usart.h
+robocon2023_cqupt\chassis_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\cmath
+robocon2023_cqupt\chassis_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 robocon2023_cqupt\chassis_task.o: ../Hardware/bsp_can.h
 robocon2023_cqupt\chassis_task.o: ../Core/Inc/can.h
 robocon2023_cqupt\chassis_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

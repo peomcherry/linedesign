@@ -43,7 +43,7 @@ typedef struct Time
 }osDelay_time;
 osDelay_time delay_time={1000,1000,1000};
 unsigned char len=0;
-uint8_t USART_RX_BUF[USART_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+uint8_t USART_RX_BUF[USART_REC_LEN]={0,1,2,1,2,2,1};     //接收缓冲,最大USART_REC_LEN个字节.
 //接收状态
 //bit15，	接收完成标志
 //bit14，	接收到0x0d
@@ -78,33 +78,40 @@ uint8_t aRxBuffer_K210[RXBUFFERSIZE_K210];//HAL库使用的串口接收缓冲
 
 void test_task(void const * argument)
 {
-	  
 	while(1)
 	{
-			printf("speed1=%lf	speed2=%lf	now1=%f	now2=%f	\n"
-			,c610[1].pid_shudu,motor_can1[1].speed_rpm,
-			c610[1].pid_shudu,motor_can1[3].speed_rpm,
-			value2,
-			value4);
+	//	AHRSData2PC();
+		osDelay(10);
+	}
+	
+}
+
+/*5版本前test主函数
+
+//			printf("speed1=%lf	speed2=%lf	now1=%f	now2=%f	\n"
+//			,c610[1].pid_shudu,motor_can1[1].speed_rpm,
+//			c610[1].pid_shudu,motor_can1[3].speed_rpm,
+//			value2,
+//			value4);
 		// AHRSData2PC();
 		
-//				int i = 0;
+				int i = 0;
 		//树莓派发送的数据
-//		 if(USART_RX_STA&0x8000)
-//		{					   
-//			len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
+		 if(USART_RX_STA&0x8000)
+		{					   
+			len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
 
-//				if(USART_RX_BUF[0] != 'r' && USART_RX_BUF[0] != 'b')
-//			{
-//				for(i=0;i<len;i++)
-//				{
-//					printf("datai=%d\r\n",USART_RX_BUF[i]-48);
-//				}
-//			}
-////			HAL_UART_Transmit(&huart2,(uint8_t*)USART_RX_BUF,len,1000);	//发送接收到的数据
-////			while( HAL_UART_GetState(&huart2) == HAL_UART_STATE_BUSY_TX );
-//			USART_RX_STA=0;
-//		}
+				if(USART_RX_BUF[0] != 'r' && USART_RX_BUF[0] != 'b')
+			{
+				for(i=0;i<len;i++)
+				{
+					printf("datai=%d\r\n",USART_RX_BUF[i]-48);
+				}
+			}
+//			HAL_UART_Transmit(&huart2,(uint8_t*)USART_RX_BUF,len,1000);	//发送接收到的数据
+//			while( HAL_UART_GetState(&huart2) == HAL_UART_STATE_BUSY_TX );
+			USART_RX_STA=0;
+		}
 //		
 //		//K210数据接收处理函数  改成自己使用的串口号
 //		if(USART_RX_STA_K210&0x8000)
@@ -122,7 +129,18 @@ void test_task(void const * argument)
 //		printf("n19.val=%f\r\n",w_z);
 //		
 
-		osDelay(10);
-	}
-	
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/

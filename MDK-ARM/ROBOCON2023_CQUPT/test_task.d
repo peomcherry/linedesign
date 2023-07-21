@@ -56,6 +56,8 @@ robocon2023_cqupt\test_task.o: ../Hardware/bsp_as5048.h
 robocon2023_cqupt\test_task.o: ../Hardware/vofa_lower.h
 robocon2023_cqupt\test_task.o: ../Hardware/bsp_sbus.h
 robocon2023_cqupt\test_task.o: ../Core/Inc/usart.h
+robocon2023_cqupt\test_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\cmath
+robocon2023_cqupt\test_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 robocon2023_cqupt\test_task.o: ..\Task\chassis_task.h
 robocon2023_cqupt\test_task.o: ..\Task\chassis_behaviour.h
 robocon2023_cqupt\test_task.o: ..\Task\chassis_task.h

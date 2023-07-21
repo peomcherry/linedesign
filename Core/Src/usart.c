@@ -809,28 +809,28 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //				w_z=posture.ActVal[5];
 //		}
 //	}
-//	if(huart == &huart8)//如果是串口8   陀螺仪（串口8）
-//	{
-//		HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
-//		if((USART_RX_STA&0x8000)==0)//接收未完成
-//		{
-//			if(USART_RX_STA&0x4000)//接收到了0x0d
-//			{
-//				if(aRxBuffer[0]!=0x0a)USART_RX_STA=0;//接收错误,重新开始
-//				else USART_RX_STA|=0x8000;	//接收完成了 
-//			}
-//			else //还没收到0X0D
-//			{	
-//				if(aRxBuffer[0]==0x0d)USART_RX_STA|=0x4000;
-//				else
-//				{
-//					USART_RX_BUF[USART_RX_STA&0X3FFF]=aRxBuffer[0] ;
-//					USART_RX_STA++;
-//					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
-//				}		 
-//			}
-//		}
-//	}
+	if(huart == &huart8)//如果是串口8   陀螺仪（串口8）
+	{
+		HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+		if((USART_RX_STA&0x8000)==0)//接收未完成
+		{
+			if(USART_RX_STA&0x4000)//接收到了0x0d
+			{
+				if(aRxBuffer[0]!=0x0a)USART_RX_STA=0;//接收错误,重新开始
+				else USART_RX_STA|=0x8000;	//接收完成了 
+			}
+			else //还没收到0X0D
+			{	
+				if(aRxBuffer[0]==0x0d)USART_RX_STA|=0x4000;
+				else
+				{
+					USART_RX_BUF[USART_RX_STA&0X3FFF]=aRxBuffer[0] ;
+					USART_RX_STA++;
+					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
+				}		 
+			}
+		}
+	}
 	if(huart == &huart2) //树莓派--串口2
 	{
 		static uint8_t Count=0;

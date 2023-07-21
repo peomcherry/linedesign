@@ -27,7 +27,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "cmath"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
