@@ -64,3 +64,4 @@ robocon2023_cqupt\test_task.o: ..\Task\chassis_task.h
 robocon2023_cqupt\test_task.o: ../Control/pid.h
 robocon2023_cqupt\test_task.o: ../Hardware/bsp_can.h
 robocon2023_cqupt\test_task.o: ../Core/Inc/can.h
+robocon2023_cqupt\test_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

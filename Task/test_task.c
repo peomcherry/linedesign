@@ -8,6 +8,7 @@
 #include "usart.h"
 #include "chassis_task.h"
 #include "pid.h"
+#include "math.h"
 extern rc_info_t rc;
 extern int aa;
 extern int aaa;
@@ -30,11 +31,20 @@ extern float set_pos_y;
 extern float set_zangle;
 extern int move_flag;
 
+typedef struct {
+    float x;
+    float y;
+    float n_x;
+    float n_y;
+} Point;
+
 
  extern    int value1;
  extern    int value2;
  extern    int value3;
  extern    int value4;
+void  rotatePoint(Point* point, double angle);
+
 typedef struct Time
 {
 	int reset_time;
@@ -77,17 +87,28 @@ uint8_t aRxBuffer_K210[RXBUFFERSIZE_K210];//HAL库使用的串口接收缓冲
   */
 
 void test_task(void const * argument)
-{
+{ 
+	
 	while(1)
 	{
-		printf("n16.val=%f\r\n",pos_y);
-		printf("n17.val=%f\r\n",pos_x);
-		printf("n18.val=%f\r\n",zangle);
-		printf("n19.val=%f\r\n",w_z);
+   
+
 	//	AHRSData2PC();
 		osDelay(10);
 	}
 	
+}
+
+void  rotatePoint(Point* point, double angle) {
+    double radian = angle * M_PI / 180.0;  // 将角度转换为弧度
+
+    // 计算旋转后的坐标点
+    float newX = point->x * cos(radian) - point->y * sin(radian);
+    float newY = point->x * sin(radian) + point->y * cos(radian);
+
+    // 更新坐标点的值
+    point->n_x= newX;
+    point->n_y= newY;
 }
 
 /*5版本前test主函数

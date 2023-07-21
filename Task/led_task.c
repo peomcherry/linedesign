@@ -15,6 +15,13 @@ extern motor_measure_t motor_can1[];
 extern speed_wheel c610[8];
 extern 	int flag;
 
+extern float pos_x;//×ø±êX--ZBx
+extern float pos_y;//×ø±êY--ZBy
+extern float zangle;//º½Ïò½Ç
+extern float xangle;//¸©Ñö½Ç
+extern float yangle;//ºá¹ö½Ç
+extern float w_z;//º½Ïò½ÇËÙ
+
 extern unsigned char station;
 extern int lsy_num;
 char time_cnt=0;
@@ -392,7 +399,7 @@ void line_walking(void)
 int Test_Attitude_judgment(void)
 {
 	int judgment_mission=0;
-	if((front_left()==0||front_right()==0)&&front_middle()!=0)//z×óÓÒ£¬µ«Ã»ÓÐÖ±Ïß
+	if((front_left()==0||front_right()==0))//&&front_middle()!=0)//z×óÓÒ£¬µ«Ã»ÓÐÖ±Ïß
 	{
 		if(front_left()==0&&front_right()==0)																//×óÓÒ
 		{
@@ -408,7 +415,7 @@ int Test_Attitude_judgment(void)
 			printf("left\r\n");
 		}	
 		else if(front_left()&&front_right()==0)															//ÓÒ×ª
-		{
+			{
 			Turn_right_flag=1;
 			judgment_mission=4;
 			printf("right\r\n");
@@ -423,28 +430,28 @@ int Test_Attitude_judgment(void)
 	{
 			judgment_mission=6;
 	}
-	else if(front_left()==0&&front_middle()==0)														//Ç°×óÅÐ¶Ï
-	{
-		Turn_straight_flag=1;
-		Turn_left_flag=1;
-		printf("str_left");
-		judgment_mission=7;
-	}
-	else if(front_right()==0&&front_middle()==0)													//Ç°ÓÒÅÐ¶Ï
-	{
-		Turn_straight_flag=1;
-		Turn_right_flag=1;
-		printf("str_right");
-		judgment_mission=8;
-	}
-	else if(front_right()==0&&front_middle()==0&&front_left()==0)					//Ê®×ÖÅÐ¶Ï
-	{
-		Turn_straight_flag=1;	
-		Turn_left_flag=1;
-		Turn_right_flag=1;
-		printf("str_double");
-		judgment_mission=9;
-	}
+//	else if(front_left()==0&&front_middle()==0)														//Ç°×óÅÐ¶Ï
+//	{
+//		Turn_straight_flag=1;
+//		Turn_left_flag=1;
+//		printf("str_left");
+//		judgment_mission=7;
+//	}
+//	else if(front_right()==0&&front_middle()==0)													//Ç°ÓÒÅÐ¶Ï
+//	{
+//		Turn_straight_flag=1;
+//		Turn_right_flag=1;
+//		printf("str_right");
+//		judgment_mission=8;
+//	}
+//	else if(front_right()==0&&front_middle()==0&&front_left()==0)					//Ê®×ÖÅÐ¶Ï
+//	{
+//		Turn_straight_flag=1;	
+//		Turn_left_flag=1;
+//		Turn_right_flag=1;
+//		printf("str_double");
+//		judgment_mission=9;
+//	}
 	else
 	{
 		judgment_mission=0;
@@ -535,52 +542,52 @@ void Patrol_execution(int mission)
 		}		
 		case 7://Ç°×ó
 		{
-			if(USART_RX_BUF[Steering_Judgment_Flag]=='1')
-	  	{
-	  		Turn_left_flag=0;
-				ll();
-	  	}
-			else if(USART_RX_BUF[Steering_Judgment_Flag]=='0')
-			{
+//			if(USART_RX_BUF[Steering_Judgment_Flag]=='1')
+//	  	{
+//	  		Turn_left_flag=0;
+//				ll();
+//	  	}
+//			else if(USART_RX_BUF[Steering_Judgment_Flag]=='0')
+//			{
 				Left_Handed_Rotation();
-				ll();
-			}
-			Steering_Judgment_Flag++;
+//				ll();
+//			}
+//			Steering_Judgment_Flag++;
 			break;
 		}
 		case 8://Ç°ÓÒ
 		{
-	  	if(USART_RX_BUF[Steering_Judgment_Flag]=='1')
-	  	{
-	  		Turn_right_flag=0;
-				ll();
-	  	}
-			else if(USART_RX_BUF[Steering_Judgment_Flag]=='2')
-			{
+//	  	if(USART_RX_BUF[Steering_Judgment_Flag]=='1')
+//	  	{
+//	  		Turn_right_flag=0;
+//				ll();
+//	  	}
+//			else if(USART_RX_BUF[Steering_Judgment_Flag]=='2')
+//			{
 				Right_Handed_Rotation();
-				ll();
-			}
-			Steering_Judgment_Flag++;
+//				ll();
+//			}
+//			Steering_Judgment_Flag++;
 			break;
 		}
 		case 9://Ê®×Ö
 		{
-			if(USART_RX_BUF[Steering_Judgment_Flag]=='1')
-	  	{
-	  		Turn_left_flag=0;
-				ll();
-	  	}
-			else if(USART_RX_BUF[Steering_Judgment_Flag]=='0')
-			{
-				Left_Handed_Rotation();
-				ll();
-			}
-			else if(USART_RX_BUF[Steering_Judgment_Flag]=='2')
-			{
+//			if(USART_RX_BUF[Steering_Judgment_Flag]=='1')
+//	  	{
+//	  		Turn_left_flag=0;
+//				ll();
+//	  	}
+//			else if(USART_RX_BUF[Steering_Judgment_Flag]=='0')
+//			{
+//				Left_Handed_Rotation();
+//				ll();
+//			}
+//			else if(USART_RX_BUF[Steering_Judgment_Flag]=='2')
+//			{
 				Right_Handed_Rotation();
-				ll();
-			}
-			Steering_Judgment_Flag++;
+//				ll();
+//			}
+//			Steering_Judgment_Flag++;
 			break;
 		}
 		case 0://Í£Ö¹
@@ -659,6 +666,8 @@ void Left_Handed_Rotation(void)
 									printf("left_turn_over");
 									
              		}
+								printf("yuan_x=%f\r\n",pos_x);
+								printf("yuan_y=%f\r\n",pos_y);
 								value2=Straight_Speed;
 								value4=Straight_Speed;
 }
@@ -675,12 +684,14 @@ void Right_Handed_Rotation(void)
 		    						value4=Straight_Speed;
 //										printf("last1_right=%f\r\n",Last_ANGLE_AHR298);
 //             	   	  printf("this1_right=%f\r\n",ANGLE_AHR298);
-										printf("delta_angle=%d\r\n",delta_angle);
+//										printf("delta_angle=%d\r\n",delta_angle);
 		    					}
 		           	Turn_right_flag=0;
 				       	Turn_right_flag=0;
 								printf("right_turn_over");
 		    	}
+					printf("yuan_x=%f\r\n",pos_x);
+					printf("yuan_y=%f\r\n",pos_y);
 		    	value2=Straight_Speed;
 		    	value4=Straight_Speed;
 			
