@@ -509,41 +509,41 @@ void UART8_IRQHandler(void)
   /* USER CODE END UART8_IRQn 0 */
   HAL_UART_IRQHandler(&huart8);
   /* USER CODE BEGIN UART8_IRQn 1 */
-//uint32_t temp;//计算串口接收到的数据个数
-//    static union
-//    {
-//        uint8_t date[24];
-//        float ActVal[6];
-//    } posture;
-//    if(UART8 == huart8.Instance)//判断是否为串口1中断
-//    {
-//        if(RESET != __HAL_UART_GET_FLAG(&huart8,UART_FLAG_IDLE))//如果为串口1空闲
-//        {
-//            __HAL_UART_CLEAR_IDLEFLAG(&huart8);//清除中断标志
-//            HAL_UART_DMAStop(&huart8);//停止DMA接收
-//            temp  = __HAL_DMA_GET_COUNTER(&hdma_uart8_rx);//获取DMA当前还有多少未填充
-//            Rx_len_Huart8 =  BUFFERSIZE - temp; //计算串口接收到的数据个数
-//            /*************************************************************************/
-//            //接收数据处理
-//            if(Rx_len_Huart8==28)
-//            {
-//                for(int i=0; i<24; i++)
-//                {
-//                    posture.date[i]=ReceiveBuff_Huart8[i+2];
-//                }
-//                zangle=-posture.ActVal[0];
-//                xangle=posture.ActVal[1];
-//                yangle=posture.ActVal[2];
-//                pos_x=posture.ActVal[3];
-//                pos_y=posture.ActVal[4];
-//                w_z=posture.ActVal[5];
-//            }
-//            /*************************************************************************/
-//            //重新开启下一次接收
-//            Rx_len_Huart8=0;//接收数据长度清零
-//            HAL_UART_Receive_DMA(&huart8,ReceiveBuff_Huart8,BUFFERSIZE);//开启下一次接收
-//        }
-//    }
+uint32_t temp;//计算串口接收到的数据个数
+    static union
+    {
+        uint8_t date[24];
+        float ActVal[6];
+    } posture;
+    if(UART8 == huart8.Instance)//判断是否为串口1中断
+    {
+        if(RESET != __HAL_UART_GET_FLAG(&huart8,UART_FLAG_IDLE))//如果为串口1空闲
+        {
+            __HAL_UART_CLEAR_IDLEFLAG(&huart8);//清除中断标志
+            HAL_UART_DMAStop(&huart8);//停止DMA接收
+            temp  = __HAL_DMA_GET_COUNTER(&hdma_uart8_rx);//获取DMA当前还有多少未填充
+            Rx_len_Huart8 =  BUFFERSIZE - temp; //计算串口接收到的数据个数
+            /*************************************************************************/
+            //接收数据处理
+            if(Rx_len_Huart8==28)
+            {
+                for(int i=0; i<24; i++)
+                {
+                    posture.date[i]=ReceiveBuff_Huart8[i+2];
+                }
+                zangle=-posture.ActVal[0];
+                xangle=posture.ActVal[1];
+                yangle=posture.ActVal[2];
+                pos_x=posture.ActVal[3];
+                pos_y=posture.ActVal[4];
+                w_z=posture.ActVal[5];
+            }
+            /*************************************************************************/
+            //重新开启下一次接收
+            Rx_len_Huart8=0;//接收数据长度清零
+            HAL_UART_Receive_DMA(&huart8,ReceiveBuff_Huart8,BUFFERSIZE);//开启下一次接收
+        }
+    }
   /* USER CODE END UART8_IRQn 1 */
 }
 

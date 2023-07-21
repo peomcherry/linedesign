@@ -140,9 +140,10 @@ void led_task(void const * argument)
 {
 	//int mission;
 	//Last_ANGLE_AHR298=ANGLE_AHR298;
+	Steering_Judgment_Flag=0;
 	while(1)
 	{
-		
+	//	printf("Steering_Judgment_Flag=%d\r\n",Steering_Judgment_Flag);
 	//	printf("delta_angle=%d\r\n",delta_angle);
 		//lsy_num=grayscale_sensor_judging();
 		osDelay(5);
@@ -255,52 +256,52 @@ void ll(void)
 	if(grayscale_sensor_judging()>=4)
 	{
 		value2 = \
-		 value4 =3000;
+		 value4 =Straight_Speed;
 		station = 1;
 	}
 	else if(left_1() == 0 || right_1() == 0)																	//直走
 	{
 		value2 = \
-		 value4 =3000;
+		 value4 =Straight_Speed;
 		station = 1;
 	}
 	else if( right_2() == 0) //偏向右边，要往左right_1() == 0 || 						//右2
 	{
-		value4 =3700;
-		value2 = 3000;
+		value4 =Straight_Speed+level1_Differential_speed;
+		value2 = Straight_Speed;
 		station = 1;
 	}
 	else if( (left_2() == 0)) //偏向左边，要往右left_1() == 0 ||				//左2
 	{
-		value2 =3700;
-		value4 = 3000;
+		value2 =Straight_Speed+level1_Differential_speed;
+		value4 = Straight_Speed;
 
 		station = 1;
 	}
 	else if( (right_3() == 0)) //偏向左边，要往右															//右3
 	{
-		value4 =4500;
-		value2 = 3200;
+		value4 =Straight_Speed+level2_Differential_speed;
+		value2 = Straight_Speed+200;
 
 		station = 1;
 	}
 	else if( (left_3() == 0)) //偏向左边，要往右1241										//左3
 	{
-		value2 =4500;
-		value4 = 3200;
+		value2 =Straight_Speed+level2_Differential_speed;
+		value4 = Straight_Speed+200;
 
 		station = 1;
 	}
 	else if( (right_4() == 0)) //偏向左边，要往右															//右4
 	{
-		value4 =5000;
-		value2 = 4000;
+		value4 =Straight_Speed+level3_Differential_speed;
+		value2 = Straight_Speed+level2_Differential_speed;
 		station = 1;
 	}
 	else if( (left_4() == 0)) //偏向左边，要往右												//左4
 	{
-		value2 =5000;
-		value4 = 4000;
+		value2 =Straight_Speed+level3_Differential_speed;
+		value4 = Straight_Speed+level2_Differential_speed;
 		station = 1;
 	}
 	else
@@ -641,14 +642,14 @@ void Left_Handed_Rotation(void)
 		printf("delta_angle=%d\r\n",delta_angle);
 //             		int delta_angle = (int)(fmod((ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0), 360.0));//((int)(ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0) % 360);
                 // 如果差值超过90度，则触发提示信息
-                if (delta_angle <= 70 || delta_angle >= 290) 
+                if (delta_angle <= Turn_quart || delta_angle >= Turn_quart_270) 
              		{
 									
 									printf("ok2\r\n");
-									while(delta_angle <= 70 || delta_angle >= 290)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=85||ABS(ANGLE_AHR298-Angle_AHR)<=85||ANGLE_AHR298<=90)									
+									while(delta_angle <= Turn_quart || delta_angle >= Turn_quart_270)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=85||ABS(ANGLE_AHR298-Angle_AHR)<=85||ANGLE_AHR298<=90)									
              	   	{
-             	   		value2=3000;
-             	   		value4=-3000;	
+             	   		value2=Straight_Speed;
+             	   		value4=(-1)*Straight_Speed;	
 //             	   		printf("last1_1eft=%f\r\n",Last_ANGLE_AHR298);
 //             	   	  printf("this1_left=%f\r\n",ANGLE_AHR298);
 										printf("delta_angle=%d\r\n",delta_angle);
@@ -658,20 +659,20 @@ void Left_Handed_Rotation(void)
 									printf("left_turn_over");
 									
              		}
-								value2=3000;
-								value4=3000;
+								value2=Straight_Speed;
+								value4=Straight_Speed;
 }
 void Right_Handed_Rotation(void)
 {
 			
 	       	Last_ANGLE_AHR298=ANGLE_AHR298;
 	//	    	      		int delta_angle = (int)(fmod((ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0), 360.0));//340-330=10//应该是转到90，才跳出循环
-		    	if (delta_angle <= 70 || delta_angle >= 290) 
+		    	if (delta_angle <= Turn_quart || delta_angle >= Turn_quart_270) 
 		    	{
-		    					while(delta_angle <= 70 || delta_angle >= 290)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=82||ABS(ANGLE_AHR298-Angle_AHR)<=82||(ANGLE_AHR298<=360&&ANGLE_AHR298>=270))
+		    					while(delta_angle <= Turn_quart || delta_angle >= Turn_quart_270)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=82||ABS(ANGLE_AHR298-Angle_AHR)<=82||(ANGLE_AHR298<=360&&ANGLE_AHR298>=270))
 		    					{
-		    						value2=-3000;
-		    						value4=3000;
+		    						value2=(-1)*Straight_Speed;
+		    						value4=Straight_Speed;
 //										printf("last1_right=%f\r\n",Last_ANGLE_AHR298);
 //             	   	  printf("this1_right=%f\r\n",ANGLE_AHR298);
 										printf("delta_angle=%d\r\n",delta_angle);
@@ -680,8 +681,8 @@ void Right_Handed_Rotation(void)
 				       	Turn_right_flag=0;
 								printf("right_turn_over");
 		    	}
-		    	value2=3000;
-		    	value4=3000;
+		    	value2=Straight_Speed;
+		    	value4=Straight_Speed;
 			
 }
 

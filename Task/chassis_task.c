@@ -54,7 +54,7 @@ void chassis_task(void const * argument)//task
 
 	for(i=0;i<4;i++)
 	{
-		PID_struct_init(&c610[i].pid_shudu,POSITION_PID,10000, 2000,5,0.06,0.1);
+		PID_struct_init(&c610[i].pid_shudu,POSITION_PID,10000, 2000,4.1f,0.18f,0.5f);
 	}//5,0.06,0.1
 	
     while(1)

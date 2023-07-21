@@ -46,6 +46,15 @@ PA5-->  ср--> P1
 #define middle_left() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_5))
 #define middle_right() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_5))
 
+
+#define Straight_Speed 3000
+#define	level1_Differential_speed 700
+#define	level2_Differential_speed 2000
+#define	level3_Differential_speed 2700
+
+#define Turn_quart 80
+#define Turn_quart_270 270+(90-Turn_quart)
+
 #define Red 1
 #define Blue 2
 /**

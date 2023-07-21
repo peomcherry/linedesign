@@ -43,7 +43,7 @@ typedef struct Time
 }osDelay_time;
 osDelay_time delay_time={1000,1000,1000};
 unsigned char len=0;
-uint8_t USART_RX_BUF[USART_REC_LEN]={0,1,2,1,2,2,1};     //接收缓冲,最大USART_REC_LEN个字节.
+uint8_t USART_RX_BUF[USART_REC_LEN]={0,0,0,2,2,0,1,2,2,0,1,1,1,1};     //接收缓冲,最大USART_REC_LEN个字节.
 //接收状态
 //bit15，	接收完成标志
 //bit14，	接收到0x0d
@@ -80,6 +80,10 @@ void test_task(void const * argument)
 {
 	while(1)
 	{
+		printf("n16.val=%f\r\n",pos_y);
+		printf("n17.val=%f\r\n",pos_x);
+		printf("n18.val=%f\r\n",zangle);
+		printf("n19.val=%f\r\n",w_z);
 	//	AHRSData2PC();
 		osDelay(10);
 	}
