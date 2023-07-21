@@ -69,6 +69,7 @@ extern UART_HandleTypeDef huart6;
 #define INSGPS_RS 80
 
 #define ANGLE_AHR298 AHRSData_Packet.Heading*57.29578f
+#define delta_angle  (int)(fmod((ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0), 360.0))
 
 
 typedef struct IMUData_Packet_t{

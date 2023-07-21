@@ -6,9 +6,14 @@
 #include "vofa_lower.h"
 #include "bsp_sbus.h"
 #include "usart.h"
+#include "chassis_task.h"
+#include "pid.h"
 extern rc_info_t rc;
 extern int aa;
 extern int aaa;
+int lsy_num=0;
+
+extern speed_wheel c610[8];
 char control_flag=1;
 extern uint8_t ReceiveBuff_Huart7[255]; //串口7接收缓冲区
 
@@ -26,7 +31,10 @@ extern float set_zangle;
 extern int move_flag;
 
 
-
+ extern    int value1;
+ extern    int value2;
+ extern    int value3;
+ extern    int value4;
 typedef struct Time
 {
 	int reset_time;
@@ -73,8 +81,14 @@ void test_task(void const * argument)
 	  
 	while(1)
 	{
-		 AHRSData2PC();
-				int i = 0;
+			printf("speed1=%lf	speed2=%lf	now1=%f	now2=%f	\n"
+			,c610[1].pid_shudu,motor_can1[1].speed_rpm,
+			c610[1].pid_shudu,motor_can1[3].speed_rpm,
+			value2,
+			value4);
+		// AHRSData2PC();
+		
+//				int i = 0;
 		//树莓派发送的数据
 //		 if(USART_RX_STA&0x8000)
 //		{					   

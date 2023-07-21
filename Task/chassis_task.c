@@ -59,12 +59,34 @@ void chassis_task(void const * argument)//task
 	
     while(1)
     {
-
+//				printf("speed1=%lf	speed2=%lf	now1=%f	now2=%f	\n"
+//			,c610[1].pid_shudu,motor_can1[1].speed_rpm,
+//			c610[1].pid_shudu,motor_can1[3].speed_rpm,
+//			-value2,
+//			value4);
+			
+//				printf("\n",c610[1].pid_shudu,motor_can1[1].speed_rpm);
+//				
+//				printf("\n",-value2);
+//				printf("\n",value4);
+			//	printf("speed1=%f\n",c610[1].pid_shudu,motor_can1[1].speed_rpm);
+//			&,-value2
+//			&c610[3].pid_shudu,motor_can1[3].speed_rpm,value4
+//			
+			
+			
+			
+			
+			
 			switch(station)
 			{
 				case 1: 
+				{
 					straight_line();
+			
+		//			station=1;
 					break;
+				}
 				case 2: 
 				{
 					turn();
