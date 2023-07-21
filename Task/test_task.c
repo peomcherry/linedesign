@@ -91,7 +91,6 @@ void test_task(void const * argument)
 	
 	while(1)
 	{
-   
 
 	//	AHRSData2PC();
 		osDelay(10);

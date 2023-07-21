@@ -48,11 +48,12 @@ PA5-->  ср--> P1
 
 
 #define Straight_Speed 3000
-#define	level1_Differential_speed 200
-#define	level2_Differential_speed 500
-#define	level3_Differential_speed 1000
+#define F_Straight_Speed -1500
+#define	level1_Differential_speed 500
+#define	level2_Differential_speed 700
+#define	level3_Differential_speed 1500
 
-#define Turn_quart 70
+#define Turn_quart 75
 #define Turn_quart_270 270+(90-Turn_quart)
 
 #define Red 1

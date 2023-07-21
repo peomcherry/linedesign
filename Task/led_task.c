@@ -56,6 +56,8 @@ double Angle_AHR;
 int grayscale_sensor_judging(void);
 void Left_Handed_Rotation(void);
 void Right_Handed_Rotation(void);
+float Gray_Gyroscope_Solution(int Gray_num);
+void ll(void);
 
   /* USER CODE END 2 */
 
@@ -150,11 +152,13 @@ void led_task(void const * argument)
 	Steering_Judgment_Flag=0;
 	while(1)
 	{
+		ll();
+   //printf("ans=%lf\r\n",ture_delta_angle);
 	//	printf("Steering_Judgment_Flag=%d\r\n",Steering_Judgment_Flag);
 	//	printf("delta_angle=%d\r\n",delta_angle);
 		//lsy_num=grayscale_sensor_judging();
 		osDelay(5);
-		Patrol_execution(Test_Attitude_judgment());
+	//	Patrol_execution(Test_Attitude_judgment());
 		judge();
 	}
 }
@@ -256,33 +260,33 @@ void judge_treasure(void)
 */
 void ll(void)
 {
+	float ll_differ;
+	int Gray=0;
 //	if(front_middle() == 1)
 //	{
 //	  	value2 = value4 =2000;
 //	}
+	// 输入参数
+  // ll_differ=Gray_Gyroscope_Solution(Gray);
+		printf("ture_de=%f",ture_delta_angle);
+		printf("cal_dis=%f\r\n",Gray_Gyroscope_Solution(Gray));
 	if(grayscale_sensor_judging()>=4)
 	{
 		value2 = \
 		 value4 =Straight_Speed;
 		station = 1;
 	}
-	else if(left_1() == 0 || right_1() == 0)																	//直走
+	//四左，二右侧
+	else if( (right_4() == 0)) //偏向左边，要往右															//右4
 	{
-		value2 = \
-		 value4 =Straight_Speed;
+		value4 =Straight_Speed+level3_Differential_speed;
+		value2 = Straight_Speed+level2_Differential_speed;
 		station = 1;
 	}
-	else if( right_2() == 0) //偏向右边，要往左right_1() == 0 || 						//右2
+	else if( (left_4() == 0)) //偏向左边，要往右												//左4
 	{
-		value4 =Straight_Speed+level1_Differential_speed;
-		value2 = Straight_Speed;
-		station = 1;
-	}
-	else if( (left_2() == 0)) //偏向左边，要往右left_1() == 0 ||				//左2
-	{
-		value2 =Straight_Speed+level1_Differential_speed;
-		value4 = Straight_Speed;
-
+		value2 =Straight_Speed+level3_Differential_speed;
+		value4 = Straight_Speed+level2_Differential_speed;
 		station = 1;
 	}
 	else if( (right_3() == 0)) //偏向左边，要往右															//右3
@@ -299,85 +303,35 @@ void ll(void)
 
 		station = 1;
 	}
-	else if( (right_4() == 0)) //偏向左边，要往右															//右4
+	else if( right_2() == 0) //偏向右边，要往左right_1() == 0 || 						//右2
 	{
-		value4 =Straight_Speed+level3_Differential_speed;
-		value2 = Straight_Speed+level2_Differential_speed;
+		value4 =Straight_Speed+level1_Differential_speed;
+		value2 = Straight_Speed;
 		station = 1;
 	}
-	else if( (left_4() == 0)) //偏向左边，要往右												//左4
+	else if( (left_2() == 0)) //偏向左边，要往右left_1() == 0 ||				//左2
 	{
-		value2 =Straight_Speed+level3_Differential_speed;
-		value4 = Straight_Speed+level2_Differential_speed;
+		value2 =Straight_Speed+level1_Differential_speed;
+		value4 = Straight_Speed;
+
 		station = 1;
 	}
+	else if(left_1() == 0 || right_1() == 0)																	//直走
+	{
+		value2 = \
+		 value4 =Straight_Speed;
+		station = 1;
+	}
+	
+	
+	
 	else
 	{
 	value2=0;
 	value4=0;
 	}
 }
-void line_walking(void)
-{
-	//0代表检测到
-	if(front_left()==0)																					//左前
-	{
-			Last_ANGLE_AHR298=ANGLE_AHR298;
-//		int delta_angle = ((int)(ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0) % 360);
 
-    // 如果差值超过90度，则触发提示信息
-    if (delta_angle <= 80 && delta_angle >= 280) 
-		{
-	   		while(delta_angle <= 80 && delta_angle >= 280)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=85||ABS(ANGLE_AHR298-Angle_AHR)<=85||ANGLE_AHR298<=90)									
-	   	{
-	   		value2=3500;
-	   		value4=-500;	
-	   		printf("last11=%f\r\n",Last_ANGLE_AHR298);
-	   	  printf("this11=%f\r\n",ANGLE_AHR298);
-	   	}
-		}
-//			Last_ANGLE_AHR298=ANGLE_AHR298;
-//		printf("last=%f\r\n",Last_ANGLE_AHR298);
-//		printf("this=%f\r\n",ANGLE_AHR298);
-//				if(0<Last_ANGLE_AHR298&&Last_ANGLE_AHR298<90){
-//			Angle_AHR =(AHRSData_Packet.Heading*57.29578f);
-//			Angle_AHR +=360;
-//		}
-		
-		value2=3000;
-		value4=3000;	
-	}
-	else if(front_right()==0)																									//右前
-	{
-			Last_ANGLE_AHR298=ANGLE_AHR298;
-//			int delta_angle = ((int)(ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0) % 360);//340-330=10//应该是转到90，才跳出循环
-			if (delta_angle <= 80 || delta_angle >= 280) 
-					{
-									while(delta_angle <= 90 || delta_angle >= 280)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=82||ABS(ANGLE_AHR298-Angle_AHR)<=82||(ANGLE_AHR298<=360&&ANGLE_AHR298>=270))
-									{
-										value2=-500;
-										value4=4500;
-									}
-					}
-					value2=3000;
-					value4=3000;
-    // 如果差值超过90度，则触发提示信息
-		//碰到左边，需要转90，
- //  Last_ANGLE_AHR298=ANGLE_AHR298;
-//					if(270<Last_ANGLE_AHR298&&Last_ANGLE_AHR298<360){
-//						Angle_AHR =(AHRSData_Packet.Heading*57.29578f);
-//						Angle_AHR -=360;
-//					}
-			
-//					printf("yylast=%f\r\n",Last_ANGLE_AHR298);
-//					printf("yythis=%f\r\n",ANGLE_AHR298);
-						//差值，达到90度，应该跳出去
-						//其中有较大跳变‘350-10=340，这种，虽然没有达到90度，但是差值大于90，需要且来约束
-	}
-	else{
-		ll();
-	}
-}
 
 /*
 状态判断函数
@@ -479,26 +433,26 @@ void Patrol_execution(int mission)
 	{
 		case 2://先写成左转 
 		{
-	  		if(grayscale_sensor_judging()>=4)
-	  		{
+//	  		if(grayscale_sensor_judging()>=4)
+//	  		{
          Left_Handed_Rotation();
-				}
+//				}
 		    	break;
 		}			
 		case 3://左转
 		{
-			if(grayscale_sensor_judging()>=4)
-			{
+//			if(grayscale_sensor_judging()>=4)
+//			{
 				Left_Handed_Rotation();
-			}				
+//			}				
 			break;
 		}		
 		case 4://右转
 		{
-			if(grayscale_sensor_judging()>=4)
-			{
+//			if(grayscale_sensor_judging()>=4)
+//			{
 				Right_Handed_Rotation();
-			}
+//			}
 			break;
 		}		
 		case 5://巡线
@@ -642,24 +596,52 @@ int grayscale_sensor_judging(void)
 		return fit;
 }
 
+float Gray_Gyroscope_Solution(int Gray_num)
+{
+		//scanf("%f", &Y);
+//    printf("请输入已知角度A的值（以度为单位）：");
+  //  scanf("%f", &A_deg);
+	float A_rad;
+	float cot_A;
+  float cos_A;
+	float x1;	// 将角度转换为弧度
+	float x2;    A_rad = ture_delta_angle * M_PI / 180.0;
+
+    // 计算cot(A)和cos(A)
+    cot_A = 1 / tan(A_rad);
+    cos_A = cos(A_rad);
+	float	Y=Gray_num*1.2;
+    // 计算两条直线在纵坐标为10处的横坐标
+//	printf("cot_A=%f\r",cot_A);
+    x1 = 1 * cot_A + cos_A * Y;
+    x2 = 0;//cos_A * Y;
+
+    // 计算差值
+  float  diff = x1 - x2;
+
+    // 输出结果
+ //   printf("两条直线在纵坐标等于10处横坐标的差值为：%f\r\n", diff);
+		return diff;
+}
+
 void Left_Handed_Rotation(void)
 {
 								Last_ANGLE_AHR298=ANGLE_AHR298;
 									printf("ok1\r\n");
-		printf("delta_angle=%d\r\n",delta_angle);
+	//	printf("delta_angle=%d\r\n",delta_angle);
 //             		int delta_angle = (int)(fmod((ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0), 360.0));//((int)(ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0) % 360);
                 // 如果差值超过90度，则触发提示信息
-                if (delta_angle <= Turn_quart || delta_angle >= Turn_quart_270) 
+                if (delta_angle < Turn_quart || delta_angle > Turn_quart_270) 
              		{
 									
 									printf("ok2\r\n");
-									while(delta_angle <= Turn_quart || delta_angle >= Turn_quart_270)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=85||ABS(ANGLE_AHR298-Angle_AHR)<=85||ANGLE_AHR298<=90)									
+									while(delta_angle < Turn_quart || delta_angle > Turn_quart_270)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=85||ABS(ANGLE_AHR298-Angle_AHR)<=85||ANGLE_AHR298<=90)									
              	   	{
              	   		value2=Straight_Speed;
-             	   		value4=(-1)*Straight_Speed;	
+             	   		value4=F_Straight_Speed;//(-1)*Straight_Speed;	
 //             	   		printf("last1_1eft=%f\r\n",Last_ANGLE_AHR298);
 //             	   	  printf("this1_left=%f\r\n",ANGLE_AHR298);
-										printf("delta_angle=%d\r\n",delta_angle);
+	//									printf("delta_angle=%d\r\n",delta_angle);
              	   	}
 		            	Turn_left_flag=0;
 				        	Turn_right_flag=0;
@@ -676,11 +658,11 @@ void Right_Handed_Rotation(void)
 			
 	       	Last_ANGLE_AHR298=ANGLE_AHR298;
 	//	    	      		int delta_angle = (int)(fmod((ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0), 360.0));//340-330=10//应该是转到90，才跳出循环
-		    	if (delta_angle <= Turn_quart || delta_angle >= Turn_quart_270) 
+		    	if (delta_angle < Turn_quart || delta_angle > Turn_quart_270) 
 		    	{
-		    					while(delta_angle <= Turn_quart || delta_angle >= Turn_quart_270)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=82||ABS(ANGLE_AHR298-Angle_AHR)<=82||(ANGLE_AHR298<=360&&ANGLE_AHR298>=270))
+		    					while(delta_angle < Turn_quart || delta_angle > Turn_quart_270)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=82||ABS(ANGLE_AHR298-Angle_AHR)<=82||(ANGLE_AHR298<=360&&ANGLE_AHR298>=270))
 		    					{
-		    						value2=(-1)*Straight_Speed;
+		    						value2=F_Straight_Speed;//(-1)*Straight_Speed;
 		    						value4=Straight_Speed;
 //										printf("last1_right=%f\r\n",Last_ANGLE_AHR298);
 //             	   	  printf("this1_right=%f\r\n",ANGLE_AHR298);
@@ -696,6 +678,8 @@ void Right_Handed_Rotation(void)
 		    	value4=Straight_Speed;
 			
 }
+
+
 
 /*以前写的一些屎山
 	// if((right_3() == 0 && left_3() == 0) || left_s() == 1)//前面一排的左边,中间都检测到了 需要减速
@@ -819,6 +803,85 @@ if(fit==0||fit==8)//没巡到线
 		//station = 2;
 	//	line_walking(turn_flag);
 	}
+	
+	
+	void line_walking(void)
+{
+	//0代表检测到
+	if(front_left()==0)																					//左前
+	{
+			Last_ANGLE_AHR298=ANGLE_AHR298;
+//		int delta_angle = ((int)(ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0) % 360);
+
+    // 如果差值超过90度，则触发提示信息
+    if (delta_angle <= 80 && delta_angle >= 280) 
+		{
+	   		while(delta_angle <= 80 && delta_angle >= 280)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=85||ABS(ANGLE_AHR298-Angle_AHR)<=85||ANGLE_AHR298<=90)									
+	   	{
+	   		value2=3500;
+	   		value4=-500;	
+	   		printf("last11=%f\r\n",Last_ANGLE_AHR298);
+	   	  printf("this11=%f\r\n",ANGLE_AHR298);
+	   	}
+		}
+//			Last_ANGLE_AHR298=ANGLE_AHR298;
+//		printf("last=%f\r\n",Last_ANGLE_AHR298);
+//		printf("this=%f\r\n",ANGLE_AHR298);
+//				if(0<Last_ANGLE_AHR298&&Last_ANGLE_AHR298<90){
+//			Angle_AHR =(AHRSData_Packet.Heading*57.29578f);
+//			Angle_AHR +=360;
+//		}
+		
+		value2=3000;
+		value4=3000;	
+	}
+	else if(front_right()==0)																									//右前
+	{
+			Last_ANGLE_AHR298=ANGLE_AHR298;
+//			int delta_angle = ((int)(ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0) % 360);//340-330=10//应该是转到90，才跳出循环
+			if (delta_angle <= 80 || delta_angle >= 280) 
+					{
+									while(delta_angle <= 90 || delta_angle >= 280)//ABS(ANGLE_AHR298-Last_ANGLE_AHR298)<=82||ABS(ANGLE_AHR298-Angle_AHR)<=82||(ANGLE_AHR298<=360&&ANGLE_AHR298>=270))
+									{
+										value2=-500;
+										value4=4500;
+									}
+					}
+					value2=3000;
+					value4=3000;
+    // 如果差值超过90度，则触发提示信息
+		//碰到左边，需要转90，
+ //  Last_ANGLE_AHR298=ANGLE_AHR298;
+//					if(270<Last_ANGLE_AHR298&&Last_ANGLE_AHR298<360){
+//						Angle_AHR =(AHRSData_Packet.Heading*57.29578f);
+//						Angle_AHR -=360;
+//					}
+			
+//					printf("yylast=%f\r\n",Last_ANGLE_AHR298);
+//					printf("yythis=%f\r\n",ANGLE_AHR298);
+						//差值，达到90度，应该跳出去
+						//其中有较大跳变‘350-10=340，这种，虽然没有达到90度，但是差值大于90，需要且来约束
+	}
+	else{
+		ll();
+	}
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 */
 
