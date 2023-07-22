@@ -55,6 +55,8 @@ extern int Time_count;
 
 IMUData_Packet_t IMUData_Packet;
 AHRSData_Packet_t AHRSData_Packet;
+
+uint8_t aRx_openmv;
 //串口屏 串口2
 //uint8_t Rx_len_Huart2;//串口2接收长度
 //uint8_t ReceiveBuff_Huart2[BUFFERSIZE]; //串口2接收缓冲区
@@ -170,7 +172,7 @@ void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 921600;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -809,9 +811,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //				w_z=posture.ActVal[5];
 //		}
 //	}
-	if(huart == &huart8)//如果是串口8   陀螺仪（串口8）
+	if(huart == &huart2)//如果是串口
 	{
-		HAL_UART_Receive_IT(&huart8, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+		HAL_UART_Receive_IT(&huart2, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+		//aRx_openmv = aRxBuffer[0];
 		if((USART_RX_STA&0x8000)==0)//接收未完成
 		{
 			if(USART_RX_STA&0x4000)//接收到了0x0d
@@ -831,49 +834,49 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		}
 	}
-	if(huart == &huart2) //树莓派--串口2
-	{
-		static uint8_t Count=0;
-		static uint8_t last_rsnum=0;
-		static uint8_t rsimu_flag=0;
-		static uint8_t rsacc_flag=0;
-			HAL_UART_Receive_IT(&huart2, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
-			//Usart_Receive = USART_ReceiveData(UART5);//Read the data //读取数据
-			Fd_data[Count]=aRxBuffer[0];  //串口数据填入数组
-			//usart1_send(Usart_Receive);
-			if(((last_rsnum==FRAME_END)&&(aRxBuffer[0] == FRAME_HEAD))||Count>0)
-			{
-			Count++; 
-			if((Fd_data[1]==TYPE_IMU)&&(Fd_data[2]==IMU_LEN))
-				rsimu_flag=1;
-			if((Fd_data[1]==TYPE_AHRS)&&(Fd_data[2]==AHRS_LEN))
-				rsacc_flag=1;
-			}
-			else 
-				Count=0;
-			last_rsnum=aRxBuffer[0];
-			
-		if(rsimu_flag==1 && Count==IMU_RS) //将本帧数据保存至Fd_rsimu数组中
-		{
-			Count=0;
-			rsimu_flag=0;
-			rs_imutype=1;
-			if(Fd_data[IMU_RS-1]==FRAME_END) //帧尾校验
-			{
-					TTL_Hex2Dec(Fd_data);
-			}
-		}
-		if(rsacc_flag==1 && Count==AHRS_RS) //
-		{
-			Count=0;
-			rsacc_flag=0;
-			rs_ahrstype=1;
-			if(Fd_data[AHRS_RS-1]==FRAME_END)
-			{
-					TTL_Hex2Dec(Fd_data);
-			}
-		}
-	}
+//	if(huart == &huart2) //树莓派--串口2
+//	{
+//		static uint8_t Count=0;
+//		static uint8_t last_rsnum=0;
+//		static uint8_t rsimu_flag=0;
+//		static uint8_t rsacc_flag=0;
+//			HAL_UART_Receive_IT(&huart2, (uint8_t *)aRxBuffer, RXBUFFERSIZE);
+//			//Usart_Receive = USART_ReceiveData(UART5);//Read the data //读取数据
+//			Fd_data[Count]=aRxBuffer[0];  //串口数据填入数组
+//			//usart1_send(Usart_Receive);
+//			if(((last_rsnum==FRAME_END)&&(aRxBuffer[0] == FRAME_HEAD))||Count>0)
+//			{
+//			Count++; 
+//			if((Fd_data[1]==TYPE_IMU)&&(Fd_data[2]==IMU_LEN))
+//				rsimu_flag=1;
+//			if((Fd_data[1]==TYPE_AHRS)&&(Fd_data[2]==AHRS_LEN))
+//				rsacc_flag=1;
+//			}
+//			else 
+//				Count=0;
+//			last_rsnum=aRxBuffer[0];
+//			
+//		if(rsimu_flag==1 && Count==IMU_RS) //将本帧数据保存至Fd_rsimu数组中
+//		{
+//			Count=0;
+//			rsimu_flag=0;
+//			rs_imutype=1;
+//			if(Fd_data[IMU_RS-1]==FRAME_END) //帧尾校验
+//			{
+//					TTL_Hex2Dec(Fd_data);
+//			}
+//		}
+//		if(rsacc_flag==1 && Count==AHRS_RS) //
+//		{
+//			Count=0;
+//			rsacc_flag=0;
+//			rs_ahrstype=1;
+//			if(Fd_data[AHRS_RS-1]==FRAME_END)
+//			{
+//					TTL_Hex2Dec(Fd_data);
+//			}
+//		}
+//	}
 	
 			if(huart == &huart6){
 			HAL_UART_Receive_IT(&huart6, (uint8_t *)aRxBuffer_K210, RXBUFFERSIZE);

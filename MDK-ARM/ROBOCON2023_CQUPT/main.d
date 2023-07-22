@@ -52,8 +52,6 @@ robocon2023_cqupt\main.o: ../Core/Inc/dma.h
 robocon2023_cqupt\main.o: ../Core/Inc/spi.h
 robocon2023_cqupt\main.o: ../Core/Inc/tim.h
 robocon2023_cqupt\main.o: ../Core/Inc/usart.h
-robocon2023_cqupt\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\cmath
-robocon2023_cqupt\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 robocon2023_cqupt\main.o: ../Core/Inc/gpio.h
 robocon2023_cqupt\main.o: ../Hardware/bsp_can.h
 robocon2023_cqupt\main.o: ../Hardware/bsp_sbus.h

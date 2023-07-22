@@ -34,6 +34,8 @@ PA5-->  ср--> P1
 #define left_4() (HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_4) == 1)
 #define right_4() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2) == 1)
 
+
+
 //#define left_4() (HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_4) == 1)
 //#define right_4() (HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2) == 1)
 
@@ -56,6 +58,8 @@ PA5-->  ср--> P1
 #define Turn_quart 75
 #define Turn_quart_270 270+(90-Turn_quart)
 
+#define M_PI 3.14159
+//#define A_rad  ture_delta_angle*3.1415/180.0
 #define Red 1
 #define Blue 2
 /**

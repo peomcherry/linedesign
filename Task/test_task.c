@@ -10,9 +10,9 @@
 #include "pid.h"
 #include "math.h"
 extern rc_info_t rc;
-extern int aa;
-extern int aaa;
+
 int lsy_num=0;
+int OPMV_ANS=0;
 
 extern speed_wheel c610[8];
 char control_flag=1;
@@ -88,10 +88,64 @@ uint8_t aRxBuffer_K210[RXBUFFERSIZE_K210];//HAL库使用的串口接收缓冲
 
 void test_task(void const * argument)
 { 
-	
+//	int i=0;
+	int previousData = 0;  // 上一次的数据
+    int count = 0;  // 十次自检的计数器
+
+    // 模拟数据接收，假设收到的数据存在变量receivedData中
+    int receivedData = 0;  // 假设收到的数据为85
+
+    // 判断receivedData是否大于80
+    
 	while(1)
 	{
-
+		if(USART_RX_STA&0x8000)
+		{	
+			
+			len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
+			receivedData=USART_RX_BUF[0];
+			if (receivedData > 80) 
+			{
+        // 判断是否需要自检十次
+        if (count < 10)
+				{
+            // 判断receivedData与上一次数据是否相同
+            if (previousData == USART_RX_BUF[0]) 
+					{
+                // 更新数据
+                USART_RX_BUF[0] = receivedData;
+                previousData = receivedData;
+								OPMV_ANS= receivedData;
+                count++;
+                printf("Data updated. Count: %d\r\n", count);
+           } 
+					else 
+					{
+                // 不更新数据，保持上一次的数据
+                previousData=USART_RX_BUF[0]	;
+                count=0;
+                printf("Data not updated.\r \n");
+            }
+        }
+				else
+				{
+					OPMV_ANS=receivedData;
+            printf("Maximum checks reached.Data=%d\r\n",receivedData);
+						count=0;
+					previousData=300;
+				}
+			}
+			else 
+			{
+        printf("Data is not greater than 80.\r\n");
+				OPMV_ANS=USART_RX_BUF[0];
+			}
+				printf("OPMV=%d\r\n",OPMV_ANS);
+			
+//			HAL_UART_Transmit(&huart2,(uint8_t*)USART_RX_BUF,len,1000);	//发送接收到的数据
+//			while( HAL_UART_GetState(&huart2) == HAL_UART_STATE_BUSY_TX );
+			USART_RX_STA=0;
+		}
 	//	AHRSData2PC();
 		osDelay(10);
 	}
@@ -108,6 +162,9 @@ void  rotatePoint(Point* point, double angle) {
     // 更新坐标点的值
     point->n_x= newX;
     point->n_y= newY;
+	
+
+
 }
 
 /*5版本前test主函数

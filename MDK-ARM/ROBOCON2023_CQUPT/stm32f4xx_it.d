@@ -36,5 +36,3 @@ robocon2023_cqupt\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_
 robocon2023_cqupt\stm32f4xx_it.o: ../Core/Inc/stm32f4xx_it.h
 robocon2023_cqupt\stm32f4xx_it.o: ../Hardware/bsp_sbus.h
 robocon2023_cqupt\stm32f4xx_it.o: ../Core/Inc/usart.h
-robocon2023_cqupt\stm32f4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\cmath
-robocon2023_cqupt\stm32f4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

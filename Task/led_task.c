@@ -22,6 +22,8 @@ extern float xangle;//俯仰角
 extern float yangle;//横滚角
 extern float w_z;//航向角速
 
+extern int OPMV_ANS;
+
 extern unsigned char station;
 extern int lsy_num;
 char time_cnt=0;
@@ -34,6 +36,7 @@ int value3=2000;
 int value4=2000;
 int last_misssion;
 int result[8]={0};
+int Gray_pos=0;
 unsigned char start_flag=1;
 unsigned char data[200];
 unsigned char direction=0;
@@ -50,13 +53,16 @@ int Turn_straight_flag=0;
 
 int Steering_Judgment_Flag=0;
 
+double quanzhong=100;
 	int i = 0;
 double Angle_AHR;
   /* USER CODE BEGIN 2 */
 int grayscale_sensor_judging(void);
 void Left_Handed_Rotation(void);
 void Right_Handed_Rotation(void);
-float Gray_Gyroscope_Solution(int Gray_num);
+double Gray_Gyroscope_Solution(int Gray_num);
+
+extern uint8_t aRx_openmv;
 void ll(void);
 
   /* USER CODE END 2 */
@@ -150,16 +156,30 @@ void led_task(void const * argument)
 	//int mission;
 	//Last_ANGLE_AHR298=ANGLE_AHR298;
 	Steering_Judgment_Flag=0;
+	double cos_A ;
 	while(1)
 	{
-		ll();
-   //printf("ans=%lf\r\n",ture_delta_angle);
+		judge();
+//		printf("ans=%lf\r\n",ture_delta_angle);
+//		printf("A_rad=%lf\r\n",(ANGLE_AHR298 - Last_ANGLE_AHR298-180.0)*3.1415f/180.0f);
+
+//		printf("cos_A=%lf\r\n",cos_A);
+		
+		
+		//RUN_LED();
+//		if(USART_RX_BUF[0] == 0xFF)
+//		{
+//			printf("ok");
+//		}
+//			printf("%d",  USART_RX_BUF[0]);
+	//	ll();
+   //	
 	//	printf("Steering_Judgment_Flag=%d\r\n",Steering_Judgment_Flag);
 	//	printf("delta_angle=%d\r\n",delta_angle);
 		//lsy_num=grayscale_sensor_judging();
 		osDelay(5);
-	//	Patrol_execution(Test_Attitude_judgment());
-		judge();
+		Patrol_execution(Test_Attitude_judgment());
+
 	}
 }
 /*主函数曾经的屎山
@@ -261,67 +281,85 @@ void judge_treasure(void)
 void ll(void)
 {
 	float ll_differ;
-	int Gray=0;
+
 //	if(front_middle() == 1)
 //	{
 //	  	value2 = value4 =2000;
 //	}
 	// 输入参数
   // ll_differ=Gray_Gyroscope_Solution(Gray);
-		printf("ture_de=%f",ture_delta_angle);
-		printf("cal_dis=%f\r\n",Gray_Gyroscope_Solution(Gray));
-	if(grayscale_sensor_judging()>=4)
-	{
-		value2 = \
-		 value4 =Straight_Speed;
-		station = 1;
-	}
+//		printf("ture_de=%f",ture_delta_angle);
+//		printf("cal_dis=%lf\r\n",Gray_Gyroscope_Solution(Gray_pos));	
+		if(USART_RX_BUF[0] <45 && USART_RX_BUF[0] >35)
+		{
+			 value2 = value4 =Straight_Speed;
+		}else if(USART_RX_BUF[0] >= 45) //2快
+		{
+	    	value2 = Straight_Speed + (USART_RX_BUF[0]-40)*quanzhong;  //右转 
+		    value4 = Straight_Speed + (40-USART_RX_BUF[0])*quanzhong;				
+		}else if(USART_RX_BUF[0] <= 35)
+		{
+	    	value2 = Straight_Speed + (USART_RX_BUF[0]-40)*quanzhong	;
+		    value4 = Straight_Speed + (40-USART_RX_BUF[0])*quanzhong;			
+		}
+//	if(grayscale_sensor_judging()>=4)
+//	{
+//		value2 = \
+//		 value4 =Straight_Speed;
+//		station = 1;
+//	}
+//	else if(grayscale_sensor_judging()<=2)
+//	{
+//		value2 = Straight_Speed+Gray_Gyroscope_Solution(Gray_pos)*1000	;
+//		 value4 =Straight_Speed-Gray_Gyroscope_Solution(Gray_pos)*1000;
+//		station = 1;
+//	}
 	//四左，二右侧
-	else if( (right_4() == 0)) //偏向左边，要往右															//右4
-	{
-		value4 =Straight_Speed+level3_Differential_speed;
-		value2 = Straight_Speed+level2_Differential_speed;
-		station = 1;
-	}
-	else if( (left_4() == 0)) //偏向左边，要往右												//左4
-	{
-		value2 =Straight_Speed+level3_Differential_speed;
-		value4 = Straight_Speed+level2_Differential_speed;
-		station = 1;
-	}
-	else if( (right_3() == 0)) //偏向左边，要往右															//右3
-	{
-		value4 =Straight_Speed+level2_Differential_speed;
-		value2 = Straight_Speed+200;
+//	else if( (right_4() == 0)) //偏向左边，要往右															//右4
+//	{
+//		value4 =Straight_Speed+level3_Differential_speed;
+//		value2 = Straight_Speed+level2_Differential_speed;
+//		station = 1;
+//	}
+//	else if( (left_4() == 0)) //偏向左边，要往右												//左4
+//	{
+//		value2 =Straight_Speed+level3_Differential_speed;
+//		value4 = Straight_Speed+level2_Differential_speed;
+//		station = 1;
+//	}
+//	else if( (right_3() == 0)) //偏向左边，要往右															//右3
+//	{
+//		value4 =Straight_Speed+level2_Differential_speed;
+//		value2 = Straight_Speed+200;
 
-		station = 1;
-	}
-	else if( (left_3() == 0)) //偏向左边，要往右1241										//左3
-	{
-		value2 =Straight_Speed+level2_Differential_speed;
-		value4 = Straight_Speed+200;
+//		station = 1;
+//	}
+//	else if( (left_3() == 0)) //偏向左边，要往右1241										//左3
+//	{
+//		value2 =Straight_Speed+level2_Differential_speed;
+//		value4 = Straight_Speed+200;
 
-		station = 1;
-	}
-	else if( right_2() == 0) //偏向右边，要往左right_1() == 0 || 						//右2
-	{
-		value4 =Straight_Speed+level1_Differential_speed;
-		value2 = Straight_Speed;
-		station = 1;
-	}
-	else if( (left_2() == 0)) //偏向左边，要往右left_1() == 0 ||				//左2
-	{
-		value2 =Straight_Speed+level1_Differential_speed;
-		value4 = Straight_Speed;
+//		station = 1;
+//	}
+//	else if( right_2() == 0) //偏向右边，要往左right_1() == 0 || 						//右2
+//	{
+//		value4 =Straight_Speed+level1_Differential_speed;
+//		value2 = Straight_Speed;
+//		station = 1;
+//	}
+//	else if( (left_2() == 0)) //偏向左边，要往右left_1() == 0 ||				//左2
+//	{
+//		value2 =Straight_Speed+level1_Differential_speed;
+//		value4 = Straight_Speed;
 
-		station = 1;
-	}
-	else if(left_1() == 0 || right_1() == 0)																	//直走
-	{
-		value2 = \
-		 value4 =Straight_Speed;
-		station = 1;
-	}
+//		station = 1;
+//	}
+//	else if(left_1() == 0 || right_1() == 0)																	//直走
+//	{
+//		value2 = \
+//		 value4 =Straight_Speed;
+//		station = 1;
+//	}
 	
 	
 	
@@ -352,69 +390,36 @@ void ll(void)
 */
 int Test_Attitude_judgment(void)
 {
-	int judgment_mission=0;
-	if((front_left()==0||front_right()==0))//&&front_middle()!=0)//z左右，但没有直线
-	{
-		if(front_left()==0&&front_right()==0)																//左右
+	   int judgment_mission=0;
+			if(OPMV_ANS == 255) //十字
 		{
-			Turn_left_flag=1;
-			Turn_right_flag=1;
-			judgment_mission=2;
-			printf("double\r\n");
-		}
-		else if(front_left()==0&&front_right())															//左转------
+			judgment_mission = 9;
+		}else if(OPMV_ANS == 150)//上右
 		{
-			Turn_left_flag=1;
-			judgment_mission=3;
-			printf("left\r\n");
-		}	
-		else if(front_left()&&front_right()==0)															//右转
-			{
-			Turn_right_flag=1;
-			judgment_mission=4;
-			printf("right\r\n");
+			judgment_mission = 8;
+		}else if(OPMV_ANS == 243) // 上左
+		{
+			judgment_mission = 7;
+		}else if(OPMV_ANS == 240)//左转
+		{
+			judgment_mission = 3;
+		}else if(OPMV_ANS == 230)//右转
+		{
+			judgment_mission = 4;
+		}else if(OPMV_ANS<=80&&OPMV_ANS>=0)
+		{
+			judgment_mission = 5;
 		}
-		
-	}
-	else if(grayscale_sensor_judging()==1||grayscale_sensor_judging()==2)//巡线							||grayscale_sensor_judging()==3)//||grayscale_sensor_judging()==4) 	//!(left_1()&&left_2()&&left_3()&&left_4()&&right_1()&&right_2()&&right_3()&&right_4()))//如果检测到了，那么其中有一个是0，若全且，则有一个有
-	{
-		judgment_mission=5;
-	}
-	else if(grayscale_sensor_judging()>=3)																//多路灰度
-	{
-			judgment_mission=6;
-	}
-//	else if(front_left()==0&&front_middle()==0)														//前左判断
-//	{
-//		Turn_straight_flag=1;
-//		Turn_left_flag=1;
-//		printf("str_left");
-//		judgment_mission=7;
-//	}
-//	else if(front_right()==0&&front_middle()==0)													//前右判断
-//	{
-//		Turn_straight_flag=1;
-//		Turn_right_flag=1;
-//		printf("str_right");
-//		judgment_mission=8;
-//	}
-//	else if(front_right()==0&&front_middle()==0&&front_left()==0)					//十字判断
-//	{
-//		Turn_straight_flag=1;	
-//		Turn_left_flag=1;
-//		Turn_right_flag=1;
-//		printf("str_double");
-//		judgment_mission=9;
-//	}
-	else
-	{
-		judgment_mission=0;
-	}
-	if(judgment_mission!=last_misssion)
-	{
-	printf("mission=%d\r\n",judgment_mission);
-	}
-	 last_misssion=judgment_mission;
+		else 
+		{
+			USART_RX_BUF[0]=40;
+			judgment_mission = 5;
+		}
+		if(judgment_mission!=last_misssion)
+	   {
+	   printf("mission=%d\r\n",judgment_mission);
+	   }
+			last_misssion=judgment_mission;
 //	printf("num=%d\r\n",grayscale_sensor_judging());
 	return judgment_mission;
 }
@@ -426,9 +431,7 @@ int Test_Attitude_judgment(void)
 void Patrol_execution(int mission)
 {
 	//int 
-	//grayscale_sensor_judging()
-	
-	
+	//grayscale_sensor_judging()	
 	switch(mission)
 	{
 		case 2://先写成左转 
@@ -564,27 +567,35 @@ int grayscale_sensor_judging(void)
 		memset(result, 0, sizeof(result));
 		if (left_1() == 0) {
         result[3]= 1;
+				Gray_pos=1;
     }
     if (right_1() == 0) {
         result[4]= 1;
+				Gray_pos=-1;
     }
     if (left_2() == 0) {
         result[2]= 1;
+				Gray_pos=2;
     }
     if (right_2() == 0) {
         result[5]= 1;
+				Gray_pos=-2;
     }
     if (left_3() == 0) {
         result[1]= 1;
+				Gray_pos=3;
     }
     if (right_3() == 0) {
         result[6]= 1;
+				Gray_pos=-3;
     }
     if (left_4() == 0) {
         result[0]= 1;
+				Gray_pos=4;
     }
     if (right_4() == 0) {
         result[7]= 1;
+				Gray_pos=-4;
     }
 		static int fit=0;
 		fit=0;
@@ -596,32 +607,42 @@ int grayscale_sensor_judging(void)
 		return fit;
 }
 
-float Gray_Gyroscope_Solution(int Gray_num)
+double Gray_Gyroscope_Solution(int Gray_num)
 {
 		//scanf("%f", &Y);
 //    printf("请输入已知角度A的值（以度为单位）：");
   //  scanf("%f", &A_deg);
-	float A_rad;
-	float cot_A;
-  float cos_A;
-	float x1;	// 将角度转换为弧度
-	float x2;    A_rad = ture_delta_angle * M_PI / 180.0;
-
+	double A_rad;
+	//float cot_A;
+  double cos_A;
+	double x1;	// 将角度转换为弧度
+	double x2;    
+	
+	A_rad =(ANGLE_AHR298 - Last_ANGLE_AHR298-180.0)*3.1415f/180.0f; // ture_delta_angle * M_PI / 180.0;
+	//printf("A_rad=%f\r",A_rad);
     // 计算cot(A)和cos(A)
-    cot_A = 1 / tan(A_rad);
+    //cot_A = 1 / tan(A_rad);
     cos_A = cos(A_rad);
-	float	Y=Gray_num*1.2;
+	double	Y=Gray_num*1.2;
+	Y=0.0;
     // 计算两条直线在纵坐标为10处的横坐标
 //	printf("cot_A=%f\r",cot_A);
-    x1 = 1 * cot_A + cos_A * Y;
+    x1 = 20 * tan(A_rad) + cos_A * Y;
     x2 = 0;//cos_A * Y;
 
     // 计算差值
-  float  diff = x1 - x2;
-
+  double  diff = x1 - x2;
+		if((diff)<4&&diff>-4)
+		{
+			return diff;
+		}
+		else
+		{
+			return 3;
+		}
     // 输出结果
- //   printf("两条直线在纵坐标等于10处横坐标的差值为：%f\r\n", diff);
-		return diff;
+//    printf("difffer=%f\r\n", diff);
+		
 }
 
 void Left_Handed_Rotation(void)
@@ -641,15 +662,16 @@ void Left_Handed_Rotation(void)
              	   		value4=F_Straight_Speed;//(-1)*Straight_Speed;	
 //             	   		printf("last1_1eft=%f\r\n",Last_ANGLE_AHR298);
 //             	   	  printf("this1_left=%f\r\n",ANGLE_AHR298);
-	//									printf("delta_angle=%d\r\n",delta_angle);
+//										printf("delta_angle=%d\r\n",delta_angle);
              	   	}
 		            	Turn_left_flag=0;
 				        	Turn_right_flag=0;
 									printf("left_turn_over");
 									
              		}
-								printf("yuan_x=%f\r\n",pos_x);
-								printf("yuan_y=%f\r\n",pos_y);
+						//		printf("yuan_x=%f\r\n",pos_x);
+						//		printf("yuan_y=%f\r\n",pos_y);
+		//						USART_RX_BUF[0]=40;
 								value2=Straight_Speed;
 								value4=Straight_Speed;
 }
@@ -917,3 +939,71 @@ if(fit==0||fit==8)//没巡到线
 //				Turn_left_flag=0;
 */
 
+
+/*
+
+if((front_left()==0||front_right()==0))//&&front_middle()!=0)//z左右，但没有直线
+	{
+		if(front_left()==0&&front_right()==0)																//左右
+		{
+			Turn_left_flag=1;
+			Turn_right_flag=1;
+			judgment_mission=2;
+			printf("double\r\n");
+		}
+		else if(front_left()==0&&front_right())															//左转------
+		{
+			Turn_left_flag=1;
+			judgment_mission=3;
+			printf("left\r\n");
+		}	
+		else if(front_left()&&front_right()==0)															//右转
+			{
+			Turn_right_flag=1;
+			judgment_mission=4;
+			printf("right\r\n");
+		}
+		
+	}
+	else if(grayscale_sensor_judging()==1||grayscale_sensor_judging()==2)//巡线							||grayscale_sensor_judging()==3)//||grayscale_sensor_judging()==4) 	//!(left_1()&&left_2()&&left_3()&&left_4()&&right_1()&&right_2()&&right_3()&&right_4()))//如果检测到了，那么其中有一个是0，若全且，则有一个有
+	{
+		judgment_mission=5;
+	}
+	else if(grayscale_sensor_judging()>=4)																//多路灰度
+	{
+			judgment_mission=6;
+	}
+//	else if(front_left()==0&&front_middle()==0)														//前左判断
+//	{
+//		Turn_straight_flag=1;
+//		Turn_left_flag=1;
+//		printf("str_left");
+//		judgment_mission=7;
+//	}
+//	else if(front_right()==0&&front_middle()==0)													//前右判断
+//	{
+//		Turn_straight_flag=1;
+//		Turn_right_flag=1;
+//		printf("str_right");
+//		judgment_mission=8;
+//	}
+//	else if(front_right()==0&&front_middle()==0&&front_left()==0)					//十字判断
+//	{
+//		Turn_straight_flag=1;	
+//		Turn_left_flag=1;
+//		Turn_right_flag=1;
+//		printf("str_double");
+//		judgment_mission=9;
+//	}
+	else
+	{
+		judgment_mission=0;
+	}
+	if(judgment_mission!=last_misssion)
+	{
+	printf("mission=%d\r\n",judgment_mission);
+	}
+	 last_misssion=judgment_mission;
+	 
+	 
+	 */

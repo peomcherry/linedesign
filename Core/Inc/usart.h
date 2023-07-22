@@ -27,7 +27,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmath"
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -72,6 +72,8 @@ extern UART_HandleTypeDef huart6;
 #define delta_angle  (int)(fmod((ANGLE_AHR298 - Last_ANGLE_AHR298 + 360.0), 360.0))
 #define	ture_delta_angle	ANGLE_AHR298 - Last_ANGLE_AHR298-180.0
 
+
+
 typedef struct IMUData_Packet_t{
 		float gyroscope_x;          //unit: rad/s
 		float gyroscope_y;          //unit: rad/s
@@ -113,6 +115,7 @@ void MX_USART6_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void AHRSData2PC(void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
